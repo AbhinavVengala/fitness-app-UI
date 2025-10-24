@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import NavItem from '../components/NavItem';
 import Dashboard from '../pages/Dashboard';
 import MealLogger from '../pages/MealLogger';
 import WorkoutTracker from '../pages/WorkoutTracker';
 import SettingsPage from '../pages/SettingsPage';
-import { Shield, Apple, Dumbbell, Settings, UserCircle, LogOut } from 'lucide-react';
+import { UserCircle, LogOut } from 'lucide-react';
 import { logout } from '../store/slices/authSlice';
 import { setActiveProfileId, resetProfile, selectActiveProfile } from '../store/slices/profileSlice';
+import Navbar from '../components/Navbar';
 
 const AppShell = ({ page }) => {
     const dispatch = useDispatch();
@@ -40,6 +40,7 @@ const AppShell = ({ page }) => {
           <div className="bg-slate-50">
             <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
                 <div className="font-bold text-lg">Fitness MVP</div>
+                <Navbar />
                 <div className="relative">
                     <button onClick={() => setShowProfileSwitcher(s => !s)} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100">
                         <UserCircle />
@@ -54,8 +55,7 @@ const AppShell = ({ page }) => {
                 </div>
             </header>
             <main className="max-w-4xl mx-auto p-4 pb-28">{renderPage()}</main>
-            <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t"><nav className="flex justify-around max-w-4xl mx-auto"><NavItem pageName="dashboard" icon={Shield} /><NavItem pageName="mealLogger" icon={Apple} /><NavItem pageName="workoutTracker" icon={Dumbbell} /><NavItem pageName="settings" icon={Settings} /></nav></footer>
-        </div>
+          </div>
         </div>
     );
 };
