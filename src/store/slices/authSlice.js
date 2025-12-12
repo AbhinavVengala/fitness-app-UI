@@ -1,63 +1,117 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { mockDatabase } from '../../data/database';
-import { setActiveProfileId, loadUserProfiles } from './profileSlice';
+import { authApi } from '../../api';
+import { setActiveProfileId, loadUserProfiles, setUserId } from './profileSlice';
 
+/**
+ * Login async thunk - authenticates user via API
+ */
 export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { dispatch, rejectWithValue }) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const user = mockDatabase.users[email];
-        if (user && user.password === password) {
-          const profiles = Object.values(user.profiles || {});
-          dispatch(loadUserProfiles(profiles));
-          if (profiles.length > 0) {
-            dispatch(setActiveProfileId(profiles[0].id));
-          }
-          resolve(email);
-        } else {
-          reject(new Error("Invalid email or password."));
-        }
-      }, 500);
-    });
+    try {
+      const response = await authApi.login(email, password);
+
+      // Store user ID and load profiles into profile slice
+      dispatch(setUserId(response.id));
+      dispatch(loadUserProfiles(response.profiles || []));
+
+      // Set first profile as active if available
+      if (response.profiles && response.profiles.length > 0) {
+        dispatch(setActiveProfileId(response.profiles[0].id));
+      }
+
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+/**
+ * Register async thunk - creates new user via API
+ */
+export const register = createAsyncThunk(
+  'auth/register',
+  async ({ email, password, name }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await authApi.register(email, password, name);
+
+      // Store user ID and load profiles
+      dispatch(setUserId(response.id));
+      dispatch(loadUserProfiles(response.profiles || []));
+
+      // Set first profile as active
+      if (response.profiles && response.profiles.length > 0) {
+        dispatch(setActiveProfileId(response.profiles[0].id));
+      }
+
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    authUser: null,
+    authUser: null,  // { id, email, isAdmin }
     isLoading: true,
     error: null,
   },
   reducers: {
     logout: (state) => {
       state.authUser = null;
+      state.error = null;
     },
     setAuthError: (state, action) => {
       state.error = action.payload;
     },
     setLoading: (state, action) => {
       state.isLoading = action.payload;
+    },
+    clearError: (state) => {
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
     builder
+      // Login
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.authUser = action.payload;
+        state.authUser = {
+          id: action.payload.id,
+          email: action.payload.email,
+          isAdmin: action.payload.isAdmin || false,
+        };
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message;
+        state.error = action.payload || 'Login failed';
+      })
+      // Register
+      .addCase(register.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.authUser = {
+          id: action.payload.id,
+          email: action.payload.email,
+          isAdmin: action.payload.isAdmin || false,
+        };
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || 'Registration failed';
       });
   },
 });
 
-export const { logout, setAuthError, setLoading } = authSlice.actions;
+export const { logout, setAuthError, setLoading, clearError } = authSlice.actions;
 export default authSlice.reducer;
