@@ -141,9 +141,9 @@ const MealLogger = () => {
     const CategoryTab = ({ category, label }) => (
         <button
             onClick={() => setActiveCategory(category)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${activeCategory === category
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+            className={`px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap border ${activeCategory === category
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                : 'bg-card text-muted-foreground border-border hover:bg-muted'
                 }`}
         >
             {label}
@@ -161,281 +161,310 @@ const MealLogger = () => {
             </div>
 
             {/* Stats Card */}
-            <Card className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+            {/* Stats Card */}
+            <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white border-none shadow-lg">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-white/80 text-sm">Calories Consumed Today</p>
-                        <p className="text-4xl font-bold">{getTotalCalories().toFixed(0)} kcal</p>
-                        <div className="flex gap-4 mt-2 text-sm text-white/80">
-                            <span>P: {totals.protein.toFixed(0)}g</span>
-                            <span>C: {totals.carbs.toFixed(0)}g</span>
-                            <span>F: {totals.fats.toFixed(0)}g</span>
+                        <p className="text-white/80 text-sm font-medium">Calories Consumed Today</p>
+                        <p className="text-4xl font-bold mt-1">{getTotalCalories().toFixed(0)} kcal</p>
+                        <div className="flex gap-4 mt-3 text-sm font-medium text-white/90">
+                            <span className="bg-white/20 px-2 py-1 rounded-md">P: {totals.protein.toFixed(0)}g</span>
+                            <span className="bg-white/20 px-2 py-1 rounded-md">C: {totals.carbs.toFixed(0)}g</span>
+                            <span className="bg-white/20 px-2 py-1 rounded-md">F: {totals.fats.toFixed(0)}g</span>
                         </div>
                     </div>
-                    <Apple className="w-16 h-16 text-white/30" />
-                </div>
-            </Card>
-
-            {/* Search & Filters */}
-            <Card>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Add Food</h2>
-
-                <div className="space-y-4">
-                    {/* Search */}
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Search foods..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full px-4 py-3 pl-12 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
-                        />
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                        {isSearching && (
-                            <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-green-500" />
-                        )}
-                    </div>
-
-                    {/* Meal Type Selector */}
-                    <div className="flex justify-center gap-2 flex-wrap">
-                        {['breakfast', 'lunch', 'dinner', 'snack'].map(type => (
-                            <button
-                                key={type}
-                                onClick={() => setMealType(type)}
-                                className={`px-4 py-2 rounded-lg font-medium transition-all ${mealType === type
-                                        ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md'
-                                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                                    }`}
-                            >
-                                {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Category Tabs */}
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                        <CategoryTab category="all" label="All" />
-                        {categories.map(cat => (
-                            <CategoryTab
-                                key={cat}
-                                category={cat}
-                                label={cat.charAt(0).toUpperCase() + cat.slice(1)}
-                            />
-                        ))}
+                    <div className="bg-white/20 p-4 rounded-2xl">
+                        <Apple className="w-10 h-10 text-white" />
                     </div>
                 </div>
             </Card>
 
-            {/* Food Grid */}
-            <Card>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
-                    Available Foods
-                </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Search & Foods */}
+                <div className="lg:col-span-2 space-y-6">
 
-                {isLoadingFoods ? (
-                    <div className="flex justify-center py-8">
-                        <Loader2 className="w-8 h-8 animate-spin text-green-500" />
-                    </div>
-                ) : filteredFoods.length === 0 ? (
-                    <p className="text-center text-slate-500 py-8">No foods found</p>
-                ) : (
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredFoods.map(food => (
-                            <div
-                                key={food.id}
-                                className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-green-500 transition-all group"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-slate-800 dark:text-white">
-                                            {food.name}
-                                        </h3>
-                                        <span className="text-xs px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300">
-                                            {food.category}
-                                        </span>
-                                    </div>
-                                    <button
-                                        onClick={() => openAddModal(food)}
-                                        className="p-2 rounded-lg bg-green-500 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-green-600"
-                                    >
-                                        <Plus size={18} />
-                                    </button>
-                                </div>
-                                <div className="grid grid-cols-4 gap-1 mt-3 text-xs text-slate-500 dark:text-slate-400">
-                                    <div className="text-center">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{food.calories}</div>
-                                        <div>kcal</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{food.protein}g</div>
-                                        <div>Protein</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{food.carbs}g</div>
-                                        <div>Carbs</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{food.fats}g</div>
-                                        <div>Fat</div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </Card>
-
-            {/* Today's Log */}
-            <Card>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Today's Log</h2>
-                {isLoading ? (
-                    <div className="flex justify-center py-4">
-                        <Loader2 className="animate-spin text-green-500" size={24} />
-                    </div>
-                ) : foodLog.length > 0 ? (
-                    <ul className="divide-y divide-slate-200 dark:divide-slate-700">
-                        {foodLog.map(food => (
-                            <li key={food.id} className="flex justify-between items-center py-3">
-                                <div>
-                                    <p className="font-medium text-slate-800 dark:text-white">{food.name}</p>
-                                    <p className="text-sm text-slate-500">
-                                        {food.meal} • P: {food.protein}g C: {food.carbs}g F: {food.fats}g
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <span className="text-green-600 font-semibold">{food.calories} kcal</span>
-                                    <button
-                                        onClick={() => handleRemoveFood(food.id)}
-                                        className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <div className="text-center py-8">
-                        <Apple className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
-                        <p className="text-slate-500">No foods logged today</p>
-                        <p className="text-sm text-slate-400">Click + on a food to add it</p>
-                    </div>
-                )}
-            </Card>
-
-            {/* Add Food Modal with Quantity */}
-            {showAddModal && selectedFood && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-slate-800 dark:text-white">
-                                Add {selectedFood.name}
-                            </h2>
-                            <button
-                                onClick={() => setShowAddModal(false)}
-                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
-                            >
-                                <X className="w-5 h-5 text-slate-500" />
-                            </button>
-                        </div>
+                    {/* Search & Filters */}
+                    {/* Search & Filters */}
+                    <Card>
+                        <h2 className="text-xl font-bold text-foreground mb-4">Add Food</h2>
 
                         <div className="space-y-4">
-                            {/* Quantity Selector */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                    Servings / Quantity
-                                </label>
-                                <div className="flex items-center gap-4">
+                            {/* Search */}
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search foods..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="input-modern bg-background pl-12"
+                                />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                {isSearching && (
+                                    <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-primary" />
+                                )}
+                            </div>
+
+                            {/* Meal Type Selector */}
+                            <div className="flex justify-center gap-2 flex-wrap">
+                                {['breakfast', 'lunch', 'dinner', 'snack'].map(type => (
                                     <button
-                                        onClick={() => setQuantity(Math.max(0.25, quantity - 0.25))}
-                                        className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xl hover:bg-slate-200 dark:hover:bg-slate-600"
+                                        key={type}
+                                        onClick={() => setMealType(type)}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-all border ${mealType === type
+                                            ? 'bg-secondary text-secondary-foreground border-secondary shadow-sm'
+                                            : 'bg-card text-muted-foreground border-border hover:bg-muted'
+                                            }`}
                                     >
-                                        −
+                                        {type.charAt(0).toUpperCase() + type.slice(1)}
                                     </button>
-                                    <input
-                                        type="number"
-                                        min="0.25"
-                                        step="0.25"
-                                        value={quantity}
-                                        onChange={(e) => setQuantity(parseFloat(e.target.value) || 1)}
-                                        className="flex-1 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white text-center text-2xl font-bold"
+                                ))}
+                            </div>
+
+                            {/* Category Tabs */}
+                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                                <CategoryTab category="all" label="All" />
+                                {categories.map(cat => (
+                                    <CategoryTab
+                                        key={cat}
+                                        category={cat}
+                                        label={cat.charAt(0).toUpperCase() + cat.slice(1)}
                                     />
-                                    <button
-                                        onClick={() => setQuantity(quantity + 0.25)}
-                                        className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xl hover:bg-slate-200 dark:hover:bg-slate-600"
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                                <p className="text-center text-sm text-slate-500 mt-1">
-                                    {quantity === 1 ? '1 serving' : `${quantity} servings`}
-                                </p>
-                            </div>
-
-                            {/* Meal Type */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                    Meal
-                                </label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {['breakfast', 'lunch', 'dinner', 'snack'].map(type => (
-                                        <button
-                                            key={type}
-                                            onClick={() => setMealType(type)}
-                                            className={`py-2 rounded-lg text-sm font-medium transition-all ${mealType === type
-                                                    ? 'bg-indigo-500 text-white'
-                                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                                                }`}
-                                        >
-                                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Calculated Macros Preview */}
-                            <div className="p-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white">
-                                <p className="text-white/80 text-sm text-center mb-2">Nutrition for {quantity} serving(s)</p>
-                                <div className="grid grid-cols-4 gap-2 text-center">
-                                    <div>
-                                        <div className="text-2xl font-bold">{calculateMacros().calories}</div>
-                                        <div className="text-xs text-white/80">kcal</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold">{calculateMacros().protein}g</div>
-                                        <div className="text-xs text-white/80">Protein</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold">{calculateMacros().carbs}g</div>
-                                        <div className="text-xs text-white/80">Carbs</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-2xl font-bold">{calculateMacros().fats}g</div>
-                                        <div className="text-xs text-white/80">Fat</div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
+                    </Card>
 
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                onClick={() => setShowAddModal(false)}
-                                className="flex-1 py-3 px-4 rounded-xl font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleAddFood}
-                                className="flex-1 py-3 px-4 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                            >
-                                <Plus className="w-5 h-5" />
-                                Add Food
-                            </button>
+                    {/* Food Grid */}
+                    <Card>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-foreground">
+                                Available Foods
+                            </h2>
+                            <span className="text-sm text-muted-foreground">{filteredFoods.length} items</span>
+                        </div>
+
+                        {isLoadingFoods ? (
+                            <div className="flex justify-center py-8">
+                                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                            </div>
+                        ) : filteredFoods.length === 0 ? (
+                            <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed border-border">
+                                <Search className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
+                                <p className="text-muted-foreground">No foods found matching your criteria</p>
+                            </div>
+                        ) : (
+                            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                {filteredFoods.map(food => (
+                                    <div
+                                        key={food.id}
+                                        className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group shadow-sm hover:shadow-md"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex-1">
+                                                <h3 className="font-semibold text-foreground truncate pr-2">
+                                                    {food.name}
+                                                </h3>
+                                                <span className="inline-block mt-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                                                    {food.category}
+                                                </span>
+                                            </div>
+                                            <button
+                                                onClick={() => openAddModal(food)}
+                                                className="p-2 rounded-lg bg-primary text-primary-foreground opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all hover:bg-primary/90 transform hover:scale-105"
+                                            >
+                                                <Plus size={18} />
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-4 gap-1 mt-4 pt-3 border-t border-border">
+                                            <div className="text-center">
+                                                <div className="font-bold text-foreground">{food.calories}</div>
+                                                <div className="text-[10px] text-muted-foreground uppercase">kcal</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="font-bold text-foreground">{food.protein}g</div>
+                                                <div className="text-[10px] text-muted-foreground uppercase">Prot</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="font-bold text-foreground">{food.carbs}g</div>
+                                                <div className="text-[10px] text-muted-foreground uppercase">Carb</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="font-bold text-foreground">{food.fats}g</div>
+                                                <div className="text-[10px] text-muted-foreground uppercase">Fat</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </Card>
+                </div>
+
+
+                {/* Right Column: Today's Log */}
+                <div className="space-y-6">
+                    <Card className="lg:sticky lg:top-6 h-fit">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-foreground">Today's Log</h2>
+                        </div>
+
+                        {isLoading ? (
+                            <div className="flex justify-center py-4">
+                                <Loader2 className="animate-spin text-primary" size={24} />
+                            </div>
+                        ) : foodLog.length > 0 ? (
+                            <ul className="divide-y divide-border">
+                                {foodLog.map(food => (
+                                    <li key={food.id} className="flex justify-between items-center py-3 group">
+                                        <div>
+                                            <p className="font-medium text-foreground">{food.name}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                <span className="capitalize">{food.meal}</span> • P: {food.protein}g C: {food.carbs}g F: {food.fats}g
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="font-semibold text-green-600 dark:text-green-400">{food.calories} kcal</span>
+                                            <button
+                                                onClick={() => handleRemoveFood(food.id)}
+                                                className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div className="text-center py-10">
+                                <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Apple className="w-8 h-8 text-muted-foreground" />
+                                </div>
+                                <p className="text-muted-foreground font-medium">No foods logged today</p>
+                                <p className="text-sm text-muted-foreground/70">Click + on a food above to track your intake</p>
+                            </div>
+                        )}
+                    </Card>
+                </div>
+            </div>
+
+
+            {/* Add Food Modal with Quantity */}
+            {
+                showAddModal && selectedFood && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in">
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 pb-8 w-full max-w-md shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-6">
+                                <section>
+                                    <h2 className="text-xl font-bold text-foreground">
+                                        Add {selectedFood.name}
+                                    </h2>
+                                </section>
+                                <button
+                                    onClick={() => setShowAddModal(false)}
+                                    className="p-2 hover:bg-muted rounded-full transition-colors"
+                                >
+                                    <X className="w-5 h-5 text-muted-foreground" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                {/* Quantity Selector */}
+                                <div>
+                                    <label className="block text-sm font-medium text-foreground mb-2">
+                                        Servings / Quantity
+                                    </label>
+                                    <div className="flex items-center justify-center gap-3">
+                                        <button
+                                            onClick={() => setQuantity(Math.max(0.25, quantity - 0.25))}
+                                            className="w-12 h-12 rounded-xl bg-muted text-foreground font-bold text-xl hover:bg-muted/80 transition-colors flex items-center justify-center"
+                                        >
+                                            −
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min="0.25"
+                                            step="0.25"
+                                            value={quantity}
+                                            onChange={(e) => setQuantity(parseFloat(e.target.value) || 1)}
+                                            className="w-20 h-12 rounded-xl bg-background border border-border text-foreground text-center text-2xl font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none p-0"
+                                        />
+                                        <button
+                                            onClick={() => setQuantity(quantity + 0.25)}
+                                            className="w-12 h-12 rounded-xl bg-muted text-foreground font-bold text-xl hover:bg-muted/80 transition-colors flex items-center justify-center"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                    <p className="text-center text-sm text-muted-foreground mt-2">
+                                        {quantity === 1 ? '1 serving' : `${quantity} servings`}
+                                    </p>
+                                </div>
+
+                                {/* Meal Type */}
+                                <div>
+                                    <label className="block text-sm font-medium text-foreground mb-2">
+                                        Meal
+                                    </label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {['breakfast', 'lunch', 'dinner', 'snack'].map(type => (
+                                            <button
+                                                key={type}
+                                                onClick={() => setMealType(type)}
+                                                className={`py-2 rounded-lg text-sm font-medium transition-all border ${mealType === type
+                                                    ? 'bg-primary text-primary-foreground border-primary'
+                                                    : 'bg-background text-muted-foreground border-border hover:bg-muted'
+                                                    }`}
+                                            >
+                                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Calculated Macros Preview */}
+                                <div className="p-4 rounded-xl bg-muted/50 border border-border">
+                                    <p className="text-muted-foreground text-sm text-center mb-3">Nutrition for {quantity} serving(s)</p>
+                                    <div className="grid grid-cols-4 gap-2 text-center">
+                                        <div>
+                                            <div className="text-lg font-bold text-foreground">{calculateMacros().calories}</div>
+                                            <div className="text-[10px] text-muted-foreground uppercase">kcal</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-lg font-bold text-foreground">{calculateMacros().protein}g</div>
+                                            <div className="text-[10px] text-muted-foreground uppercase">Prot</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-lg font-bold text-foreground">{calculateMacros().carbs}g</div>
+                                            <div className="text-[10px] text-muted-foreground uppercase">Carb</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-lg font-bold text-foreground">{calculateMacros().fats}g</div>
+                                            <div className="text-[10px] text-muted-foreground uppercase">Fat</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 mt-6 pb-2">
+                                <button
+                                    onClick={() => setShowAddModal(false)}
+                                    className="flex-1 py-3 px-4 rounded-xl font-semibold bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleAddFood}
+                                    className="flex-1 py-3 px-4 rounded-xl font-semibold btn-primary flex items-center justify-center gap-2"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                    Add Food
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

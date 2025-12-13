@@ -77,15 +77,18 @@ const ProfileCreationPage = () => {
     const prevStep = () => setStep(prev => prev - 1);
 
     return (
-        <div className="min-h-screen gradient-bg-animated flex items-center justify-center p-4">
-            <div className="glass-card w-full max-w-lg p-8 animate-in">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+            {/* Background Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-background to-secondary/10 -z-10" />
+
+            <div className="w-full max-w-lg p-8 animate-in bg-card border border-border rounded-2xl shadow-xl">
                 {/* Progress indicator */}
                 <div className="flex justify-center gap-2 mb-8">
                     {[1, 2, 3].map(i => (
                         <div
                             key={i}
-                            className={`w-3 h-3 rounded-full transition-all duration-300 ${i === step ? 'bg-indigo-500 w-8' :
-                                i < step ? 'bg-indigo-400' : 'bg-gray-300 dark:bg-gray-600'
+                            className={`h-2 rounded-full transition-all duration-300 ${i === step ? 'bg-primary w-8' :
+                                i < step ? 'bg-primary/60 w-2' : 'bg-muted w-2'
                                 }`}
                         />
                     ))}
@@ -95,44 +98,44 @@ const ProfileCreationPage = () => {
                 {step === 1 && (
                     <div className="space-y-6">
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center mb-4">
-                                <User className="w-8 h-8 text-white" />
+                            <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                                <User className="w-8 h-8 text-primary" />
                             </div>
-                            <h2 className="text-2xl font-bold" style={{ color: 'var(--title-color)' }}>Let's set up your profile</h2>
-                            <p className="text-gray-500 dark:text-gray-400 mt-2">Tell us a bit about yourself</p>
+                            <h2 className="text-2xl font-bold text-foreground">Let's set up your profile</h2>
+                            <p className="text-muted-foreground mt-2">Tell us a bit about yourself</p>
                         </div>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Name</label>
+                                <label className="block text-sm font-medium text-foreground mb-2">Your Name</label>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={e => updateField('name', e.target.value)}
                                     placeholder="Enter your name"
-                                    className="input-modern"
+                                    className="input-modern bg-background"
                                     style={{ paddingLeft: '1rem' }}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Age</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Age</label>
                                     <input
                                         type="number"
                                         value={formData.age}
                                         onChange={e => updateField('age', e.target.value)}
                                         placeholder="25"
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gender</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Gender</label>
                                     <select
                                         value={formData.gender}
                                         onChange={e => updateField('gender', e.target.value)}
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     >
                                         <option value="male">Male</option>
@@ -142,26 +145,26 @@ const ProfileCreationPage = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Weight (kg)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Weight (kg)</label>
                                     <input
                                         type="number"
                                         value={formData.weight}
                                         onChange={e => updateField('weight', e.target.value)}
                                         placeholder="70"
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Height (cm)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Height (cm)</label>
                                     <input
                                         type="number"
                                         value={formData.height}
                                         onChange={e => updateField('height', e.target.value)}
                                         placeholder="170"
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
                                 </div>
@@ -174,11 +177,11 @@ const ProfileCreationPage = () => {
                 {step === 2 && (
                     <div className="space-y-6">
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4">
-                                <Target className="w-8 h-8 text-white" />
+                            <div className="w-16 h-16 mx-auto rounded-2xl bg-green-100 flex items-center justify-center mb-4 dark:bg-green-900/20">
+                                <Target className="w-8 h-8 text-green-600 dark:text-green-400" />
                             </div>
-                            <h2 className="text-2xl font-bold" style={{ color: 'var(--title-color)' }}>What's your goal?</h2>
-                            <p className="text-gray-500 dark:text-gray-400 mt-2">Choose your fitness objective</p>
+                            <h2 className="text-2xl font-bold text-foreground">What's your goal?</h2>
+                            <p className="text-muted-foreground mt-2">Choose your fitness objective</p>
                         </div>
 
                         <div className="space-y-3">
@@ -193,38 +196,29 @@ const ProfileCreationPage = () => {
                                     <button
                                         key={goal.value}
                                         onClick={() => updateField('fitnessGoal', goal.value)}
-                                        className={`w-full p-4 rounded-xl text-left transition-all duration-200 flex items-center gap-4 ${isSelected
-                                                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30'
-                                                : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600'
+                                        className={`w-full p-4 rounded-xl text-left transition-all duration-200 flex items-center gap-4 border ${isSelected
+                                            ? 'bg-primary text-primary-foreground border-primary shadow-md'
+                                            : 'bg-background hover:bg-muted border-border'
                                             }`}
                                     >
                                         <span className="text-2xl">{goal.emoji}</span>
                                         <div>
-                                            <div className={`font-semibold ${isSelected ? 'text-white' : 'text-white'}`}>
-                                                {goal.label}
-                                            </div>
-                                            <div className={`text-sm ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
+                                            <div className="font-semibold">{goal.label}</div>
+                                            <div className={`text-sm ${isSelected ? 'opacity-90' : 'text-muted-foreground'}`}>
                                                 {goal.desc}
                                             </div>
                                         </div>
-                                        {isSelected && (
-                                            <div className="ml-auto">
-                                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                                                    <div className="w-3 h-3 rounded-full bg-white"></div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </button>
                                 );
                             })}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience Level</label>
+                            <label className="block text-sm font-medium text-foreground mb-2">Experience Level</label>
                             <select
                                 value={formData.experienceLevel}
                                 onChange={e => updateField('experienceLevel', e.target.value)}
-                                className="input-modern"
+                                className="input-modern bg-background"
                                 style={{ paddingLeft: '1rem' }}
                             >
                                 <option value="beginner">Beginner (0-1 years)</option>
@@ -239,65 +233,65 @@ const ProfileCreationPage = () => {
                 {step === 3 && (
                     <div className="space-y-6">
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mb-4">
-                                <Dumbbell className="w-8 h-8 text-white" />
+                            <div className="w-16 h-16 mx-auto rounded-2xl bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center mb-4">
+                                <Dumbbell className="w-8 h-8 text-orange-600 dark:text-orange-400" />
                             </div>
-                            <h2 className="text-2xl font-bold" style={{ color: 'var(--title-color)' }}>Set your daily targets</h2>
-                            <p className="text-gray-500 dark:text-gray-400 mt-2">You can adjust these anytime</p>
+                            <h2 className="text-2xl font-bold text-foreground">Set your daily targets</h2>
+                            <p className="text-muted-foreground mt-2">You can adjust these anytime</p>
                         </div>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Daily Calories</label>
+                                <label className="block text-sm font-medium text-foreground mb-2">Daily Calories</label>
                                 <input
                                     type="number"
                                     value={formData.goals.calories}
                                     onChange={e => updateGoal('calories', e.target.value)}
-                                    className="input-modern"
+                                    className="input-modern bg-background"
                                     style={{ paddingLeft: '1rem' }}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Protein (g)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Protein (g)</label>
                                     <input
                                         type="number"
                                         value={formData.goals.protein}
                                         onChange={e => updateGoal('protein', e.target.value)}
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Carbs (g)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Carbs (g)</label>
                                     <input
                                         type="number"
                                         value={formData.goals.carbs}
                                         onChange={e => updateGoal('carbs', e.target.value)}
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fats (g)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Fats (g)</label>
                                     <input
                                         type="number"
                                         value={formData.goals.fats}
                                         onChange={e => updateGoal('fats', e.target.value)}
-                                        className="input-modern"
+                                        className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Water (glasses/day)</label>
+                                <label className="block text-sm font-medium text-foreground mb-2">Water (glasses/day)</label>
                                 <input
                                     type="number"
                                     value={formData.goals.water}
                                     onChange={e => updateGoal('water', e.target.value)}
-                                    className="input-modern"
+                                    className="input-modern bg-background"
                                     style={{ paddingLeft: '1rem' }}
                                 />
                             </div>
@@ -307,8 +301,8 @@ const ProfileCreationPage = () => {
 
                 {/* Error message */}
                 {error && (
-                    <div className="mt-4 bg-red-50 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 rounded-xl p-3 text-center">
-                        <p className="text-red-600 dark:text-red-300 text-sm">{error}</p>
+                    <div className="mt-4 bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center">
+                        <p className="text-destructive text-sm">{error}</p>
                     </div>
                 )}
 
@@ -317,7 +311,7 @@ const ProfileCreationPage = () => {
                     {step > 1 && (
                         <button
                             onClick={prevStep}
-                            className="flex-1 py-3 px-4 rounded-xl font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            className="flex-1 py-3 px-4 rounded-xl font-semibold bg-muted text-foreground hover:bg-muted/80 transition-colors"
                         >
                             Back
                         </button>

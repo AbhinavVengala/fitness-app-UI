@@ -130,9 +130,9 @@ const WorkoutTracker = () => {
     const CategoryTab = ({ category, icon: Icon, label }) => (
         <button
             onClick={() => setActiveCategory(category)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeCategory === category
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all border ${activeCategory === category
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                : 'bg-card text-muted-foreground border-border hover:bg-muted'
                 }`}
         >
             {Icon && <Icon size={18} />}
@@ -141,173 +141,192 @@ const WorkoutTracker = () => {
     );
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 pb-10 animate-in">
             {/* Header */}
             <div className="text-center">
-                <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Workout Tracker</h1>
-                <p className="text-slate-500 dark:text-slate-400 mt-1">Select exercises and log your workouts</p>
+                <h1 className="text-3xl font-bold text-foreground">Workout Tracker</h1>
+                <p className="text-muted-foreground mt-1">Select exercises and log your workouts</p>
             </div>
 
             {/* Stats Card */}
-            <Card className="bg-gradient-to-r from-red-500 to-orange-500 text-white">
+            <Card className="bg-gradient-to-br from-red-500 to-orange-600 text-white border-none shadow-lg">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-white/80 text-sm">Calories Burned Today</p>
-                        <p className="text-4xl font-bold">{getTotalCaloriesBurned().toFixed(0)} kcal</p>
+                        <p className="text-white/80 text-sm font-medium">Calories Burned Today</p>
+                        <p className="text-4xl font-bold mt-1">{getTotalCaloriesBurned().toFixed(0)} kcal</p>
                     </div>
-                    <Flame className="w-16 h-16 text-white/30" />
-                </div>
-            </Card>
-
-            {/* Category Tabs & Search */}
-            <Card>
-                <div className="space-y-4">
-                    {/* Search */}
-                    <div className="relative">
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            placeholder="Search exercises..."
-                            className="w-full px-4 py-3 pl-12 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
-                        />
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    </div>
-
-                    {/* Category Tabs */}
-                    <div className="flex flex-wrap gap-2">
-                        <CategoryTab category="all" label="All" />
-                        {categories.map(cat => (
-                            <CategoryTab
-                                key={cat}
-                                category={cat}
-                                label={cat.charAt(0).toUpperCase() + cat.slice(1)}
-                            />
-                        ))}
+                    <div className="bg-white/20 p-4 rounded-2xl">
+                        <Flame className="w-10 h-10 text-white" />
                     </div>
                 </div>
             </Card>
 
-            {/* Exercise Grid */}
-            <Card>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
-                    Available Exercises
-                </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Search & Exercises */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Category Tabs & Search */}
+                    <Card>
+                        <div className="space-y-4">
+                            {/* Search */}
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                    placeholder="Search exercises..."
+                                    className="input-modern bg-background pl-12"
+                                />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            </div>
 
-                {isLoading ? (
-                    <div className="flex justify-center py-8">
-                        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                    </div>
-                ) : filteredExercises.length === 0 ? (
-                    <p className="text-center text-slate-500 py-8">No exercises found</p>
-                ) : (
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredExercises.map(exercise => (
-                            <div
-                                key={exercise.id}
-                                className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-indigo-500 transition-all group"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-semibold text-slate-800 dark:text-white">
-                                            {exercise.name}
-                                        </h3>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300">
-                                                {exercise.category}
-                                            </span>
-                                            <span className="text-xs text-slate-500">
-                                                {exercise.type === 'reps' ? (
-                                                    <span className="flex items-center gap-1">
-                                                        <Hash size={12} /> Reps
+                            {/* Category Tabs */}
+                            <div className="flex flex-wrap gap-2">
+                                <CategoryTab category="all" label="All" />
+                                {categories.map(cat => (
+                                    <CategoryTab
+                                        key={cat}
+                                        category={cat}
+                                        label={cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Exercise Grid */}
+                    <Card>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-foreground">
+                                Available Exercises
+                            </h2>
+                            <span className="text-sm text-muted-foreground">{filteredExercises.length} items</span>
+                        </div>
+
+                        {isLoading ? (
+                            <div className="flex justify-center py-8">
+                                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                            </div>
+                        ) : filteredExercises.length === 0 ? (
+                            <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed border-border">
+                                <Dumbbell className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
+                                <p className="text-muted-foreground">No exercises found</p>
+                            </div>
+                        ) : (
+                            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                {filteredExercises.map(exercise => (
+                                    <div
+                                        key={exercise.id}
+                                        className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group shadow-sm hover:shadow-md"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <h3 className="font-semibold text-foreground">
+                                                    {exercise.name}
+                                                </h3>
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                                                        {exercise.category}
                                                     </span>
-                                                ) : (
-                                                    <span className="flex items-center gap-1">
-                                                        <Timer size={12} /> Duration
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {exercise.type === 'reps' ? (
+                                                            <span className="flex items-center gap-1">
+                                                                <Hash size={12} /> Reps
+                                                            </span>
+                                                        ) : (
+                                                            <span className="flex items-center gap-1">
+                                                                <Timer size={12} /> Duration
+                                                            </span>
+                                                        )}
                                                     </span>
-                                                )}
-                                            </span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => openAddModal(exercise)}
+                                                className="p-2 rounded-lg bg-primary text-primary-foreground opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all hover:bg-primary/90 transform hover:scale-105"
+                                            >
+                                                <Plus size={18} />
+                                            </button>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => openAddModal(exercise)}
-                                        className="p-2 rounded-lg bg-indigo-500 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-indigo-600"
-                                    >
-                                        <Plus size={18} />
-                                    </button>
-                                </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                )}
-            </Card>
+                        )}
+                    </Card>
+                </div>
 
-            {/* Today's Logged Workouts */}
-            <Card>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
-                    Today's Workouts
-                </h2>
-                {workoutLog.length > 0 ? (
-                    <ul className="divide-y divide-slate-200 dark:divide-slate-700">
-                        {workoutLog.map(log => (
-                            <li key={log.id} className="flex justify-between items-center py-3">
-                                <div>
-                                    <span className="font-medium text-slate-800 dark:text-white">{log.name}</span>
-                                    <span className="text-sm text-slate-500 block">
-                                        {log.type === 'reps'
-                                            ? `${log.sets} sets × ${log.reps} reps`
-                                            : `${log.duration} min`
-                                        }
-                                    </span>
+                {/* Right Column: Today's Workouts */}
+                <div className="space-y-6">
+                    <Card className="lg:sticky lg:top-6 h-fit">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-foreground">
+                                Today's Workouts
+                            </h2>
+                        </div>
+                        {workoutLog.length > 0 ? (
+                            <ul className="divide-y divide-border">
+                                {workoutLog.map(log => (
+                                    <li key={log.id} className="flex justify-between items-center py-3 group">
+                                        <div>
+                                            <span className="font-medium text-foreground">{log.name}</span>
+                                            <span className="text-sm text-muted-foreground block">
+                                                {log.type === 'reps'
+                                                    ? `${log.sets} sets × ${log.reps} reps`
+                                                    : `${log.duration} min`
+                                                }
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-semibold text-orange-500 dark:text-orange-400">
+                                                {log.caloriesBurned?.toFixed(0) || 0} kcal
+                                            </span>
+                                            <button
+                                                onClick={() => dispatch(removeWorkoutAsync({
+                                                    profileId: activeProfile.id,
+                                                    workoutId: log.id
+                                                }))}
+                                                className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div className="text-center py-10">
+                                <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Dumbbell className="w-8 h-8 text-muted-foreground" />
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <span className="font-semibold text-red-500">
-                                        {log.caloriesBurned?.toFixed(0) || 0} kcal
-                                    </span>
-                                    <button
-                                        onClick={() => dispatch(removeWorkoutAsync({
-                                            profileId: activeProfile.id,
-                                            workoutId: log.id
-                                        }))}
-                                        className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <div className="text-center py-8">
-                        <Dumbbell className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
-                        <p className="text-slate-500">No workouts logged today</p>
-                        <p className="text-sm text-slate-400">Click + on an exercise to add it</p>
-                    </div>
-                )}
-            </Card>
+                                <p className="text-muted-foreground font-medium">No workouts logged today</p>
+                                <p className="text-sm text-muted-foreground/70">Click + on an exercise to add it</p>
+                            </div>
+                        )}
+                    </Card>
+                </div>
+            </div>
 
             {/* Add Workout Modal */}
             {showAddModal && selectedExercise && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 pb-8 w-full max-w-md shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                            <h2 className="text-xl font-bold text-foreground">
                                 Log {selectedExercise.name}
                             </h2>
                             <button
                                 onClick={() => setShowAddModal(false)}
-                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                                className="p-2 hover:bg-muted rounded-full transition-colors"
                             >
-                                <X className="w-5 h-5 text-slate-500" />
+                                <X className="w-5 h-5 text-muted-foreground" />
                             </button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {selectedExercise.type === 'reps' ? (
                                 <>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-foreground mb-2">
                                             Sets
                                         </label>
                                         <input
@@ -315,11 +334,11 @@ const WorkoutTracker = () => {
                                             min="1"
                                             value={workoutForm.sets}
                                             onChange={(e) => setWorkoutForm({ ...workoutForm, sets: parseInt(e.target.value) || 1 })}
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white text-center text-xl font-bold"
+                                            className="w-full h-12 rounded-xl bg-background border border-border text-foreground text-center text-xl font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-foreground mb-2">
                                             Reps per Set
                                         </label>
                                         <input
@@ -327,13 +346,13 @@ const WorkoutTracker = () => {
                                             min="1"
                                             value={workoutForm.reps}
                                             onChange={(e) => setWorkoutForm({ ...workoutForm, reps: parseInt(e.target.value) || 1 })}
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white text-center text-xl font-bold"
+                                            className="w-full h-12 rounded-xl bg-background border border-border text-foreground text-center text-xl font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                                         />
                                     </div>
                                 </>
                             ) : (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
                                         Duration (minutes)
                                     </label>
                                     <input
@@ -341,28 +360,28 @@ const WorkoutTracker = () => {
                                         min="1"
                                         value={workoutForm.duration}
                                         onChange={(e) => setWorkoutForm({ ...workoutForm, duration: parseInt(e.target.value) || 1 })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white text-center text-xl font-bold"
+                                        className="w-full h-12 rounded-xl bg-background border border-border text-foreground text-center text-xl font-bold focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                                     />
                                 </div>
                             )}
 
                             {/* Calorie Preview */}
-                            <div className="p-4 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white text-center">
-                                <p className="text-white/80 text-sm">Estimated Calories</p>
-                                <p className="text-3xl font-bold">{calculateCalories().toFixed(0)} kcal</p>
+                            <div className="p-4 rounded-xl bg-muted/50 border border-border text-center">
+                                <p className="text-muted-foreground text-sm">Estimated Calories</p>
+                                <p className="text-3xl font-bold text-foreground mt-1">{calculateCalories().toFixed(0)} kcal</p>
                             </div>
                         </div>
 
-                        <div className="flex gap-3 mt-6">
+                        <div className="flex gap-3 mt-8">
                             <button
                                 onClick={() => setShowAddModal(false)}
-                                className="flex-1 py-3 px-4 rounded-xl font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                className="flex-1 py-3 px-4 rounded-xl font-semibold bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleAddWorkout}
-                                className="flex-1 py-3 px-4 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                                className="flex-1 py-3 px-4 rounded-xl font-semibold btn-primary flex items-center justify-center gap-2"
                             >
                                 <Plus className="w-5 h-5" />
                                 Add Workout

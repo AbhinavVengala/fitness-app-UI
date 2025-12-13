@@ -234,6 +234,7 @@ export const selectDailyTotals = (state) => {
     carbs: foodLog.reduce((sum, item) => sum + (item.carbs || 0), 0),
     fats: foodLog.reduce((sum, item) => sum + (item.fats || 0), 0),
     caloriesBurned: workoutLog.reduce((sum, item) => sum + (item.caloriesBurned || 0), 0),
+    water: state.data.waterIntake || 0,
   };
 };
 

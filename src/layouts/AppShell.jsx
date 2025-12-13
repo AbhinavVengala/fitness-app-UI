@@ -12,13 +12,17 @@ import { setActiveProfileId, resetProfile, selectActiveProfile, setPage } from '
 import { resetData } from '../store/slices/dataSlice';
 import { initializeTheme } from '../store/slices/themeSlice';
 import Navbar from '../components/Navbar';
+import MobileNavbar from '../components/MobileNavbar';
 import ThemeToggle from '../components/ThemeToggle';
+import FeedbackModal from '../components/FeedbackModal';
+import { MessageSquare } from 'lucide-react';
 
 const AppShell = ({ page }) => {
     const dispatch = useDispatch();
     const activeProfile = useSelector(selectActiveProfile);
     const { userProfiles } = useSelector(state => state.profile);
     const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
+    const [showFeedback, setShowFeedback] = useState(false);
 
     // Initialize theme on mount
     useEffect(() => {
@@ -55,17 +59,17 @@ const AppShell = ({ page }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 font-sans transition-colors duration-300">
+        <div className="min-h-screen bg-background font-sans transition-colors duration-300">
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50">
+            <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
                 <div className="max-w-6xl mx-auto px-4">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-lg">
-                                <span className="text-white font-bold text-lg">F</span>
+                            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                                <span className="text-primary-foreground font-bold text-lg">F</span>
                             </div>
-                            <span className="font-bold text-xl text-gray-800 dark:text-white hidden sm:block">
+                            <span className="font-bold text-xl text-foreground hidden xl:block">
                                 Fitness Tracker
                             </span>
                         </div>
@@ -81,46 +85,56 @@ const AppShell = ({ page }) => {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowProfileSwitcher(s => !s)}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-muted transition-colors"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 flex items-center justify-center">
-                                        <UserCircle className="w-5 h-5 text-white" />
+                                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center border border-border">
+                                        <UserCircle className="w-5 h-5 text-muted-foreground" />
                                     </div>
-                                    <span className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    <span className="hidden sm:block text-sm font-medium text-foreground">
                                         {activeProfile?.name || "Select Profile"}
                                     </span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showProfileSwitcher ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showProfileSwitcher ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {showProfileSwitcher && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden animate-in">
+                                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-border overflow-hidden animate-in">
                                         <div className="p-2">
                                             {userProfiles.map(p => (
                                                 <button
                                                     key={p.id}
                                                     onClick={() => handleProfileSwitch(p.id)}
                                                     className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${p.id === activeProfile?.id
-                                                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                                                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200'
+                                                        ? 'bg-primary/10 text-primary'
+                                                        : 'hover:bg-muted text-foreground'
                                                         }`}
                                                 >
                                                     {p.name}
                                                 </button>
                                             ))}
                                         </div>
-                                        <div className="border-t border-gray-100 dark:border-gray-700 p-2">
+                                        <div className="border-t border-border p-2">
                                             <button
                                                 onClick={handleNavigateToProfile}
-                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
                                             >
                                                 <Settings className="w-4 h-4" />
                                                 Profile Settings
                                             </button>
+                                            <button
+                                                onClick={() => {
+                                                    setShowFeedback(true);
+                                                    setShowProfileSwitcher(false);
+                                                }}
+                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                                            >
+                                                <MessageSquare className="w-4 h-4" />
+                                                Give Feedback
+                                            </button>
                                         </div>
-                                        <div className="border-t border-gray-100 dark:border-gray-700 p-2">
+                                        <div className="border-t border-border p-2">
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
                                             >
                                                 <LogOut className="w-4 h-4" />
                                                 Logout
@@ -135,9 +149,12 @@ const AppShell = ({ page }) => {
             </header>
 
             {/* Main Content */}
-            <main className="max-w-6xl mx-auto px-4 py-6 pb-28 md:pb-8">
+            <main className="max-w-6xl mx-auto px-4 py-6 pb-28 lg:pb-8">
                 {renderPage()}
             </main>
+
+            <MobileNavbar />
+            <FeedbackModal isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
         </div>
     );
 };

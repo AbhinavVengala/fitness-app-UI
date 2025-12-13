@@ -1,6 +1,36 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { authApi } from '../../api';
+import { authApi, tokenManager } from '../../api';
 import { setActiveProfileId, loadUserProfiles, setUserId } from './profileSlice';
+
+/**
+ * Restore session from stored token
+ */
+export const restoreSession = createAsyncThunk(
+  'auth/restoreSession',
+  async (_, { dispatch, rejectWithValue }) => {
+    const token = tokenManager.getToken();
+    if (!token) {
+      return rejectWithValue('No token found');
+    }
+
+    try {
+      const response = await authApi.getCurrentUser();
+
+      // Restore user data
+      dispatch(setUserId(response.id));
+      dispatch(loadUserProfiles(response.profiles || []));
+
+      if (response.profiles && response.profiles.length > 0) {
+        dispatch(setActiveProfileId(response.profiles[0].id));
+      }
+
+      return response;
+    } catch (error) {
+      tokenManager.removeToken();
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 /**
  * Login async thunk - authenticates user via API
@@ -55,7 +85,7 @@ export const register = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    authUser: null,  // { id, email, isAdmin }
+    authUser: null,  // { id, email, isAdmin, token }
     isLoading: true,
     error: null,
   },
@@ -63,6 +93,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.authUser = null;
       state.error = null;
+      tokenManager.removeToken();
     },
     setAuthError: (state, action) => {
       state.error = action.payload;
@@ -76,6 +107,24 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Restore Session
+      .addCase(restoreSession.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.authUser = {
+          id: action.payload.id,
+          email: action.payload.email,
+          isAdmin: action.payload.isAdmin || false,
+          token: action.payload.token,
+        };
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        state.isLoading = false;
+        state.authUser = null;
+      })
       // Login
       .addCase(login.pending, (state) => {
         state.isLoading = true;
@@ -87,6 +136,7 @@ const authSlice = createSlice({
           id: action.payload.id,
           email: action.payload.email,
           isAdmin: action.payload.isAdmin || false,
+          token: action.payload.token,
         };
       })
       .addCase(login.rejected, (state, action) => {
@@ -104,6 +154,7 @@ const authSlice = createSlice({
           id: action.payload.id,
           email: action.payload.email,
           isAdmin: action.payload.isAdmin || false,
+          token: action.payload.token,
         };
       })
       .addCase(register.rejected, (state, action) => {
@@ -115,3 +166,4 @@ const authSlice = createSlice({
 
 export const { logout, setAuthError, setLoading, clearError } = authSlice.actions;
 export default authSlice.reducer;
+

@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AuthPage from '../pages/AuthPage';
+import LandingPage from '../pages/LandingPage';
 import ProfileManagementPage from '../pages/ProfileManagementPage';
 import ProfileCreationPage from '../pages/ProfileCreationPage';
 import AppShell from './AppShell';
 import { Loader2 } from 'lucide-react';
-import { setLoading } from '../store/slices/authSlice';
-import { selectActiveProfile } from '../store/slices/profileSlice';
-import { loadDataFromProfile, fetchTodayData, setGoals, setWaterIntake } from '../store/slices/dataSlice';
+import { restoreSession, logout, setLoading } from '../store/slices/authSlice';
+import { resetProfile, selectActiveProfile } from '../store/slices/profileSlice';
+import { resetData, fetchTodayData, setGoals, setWaterIntake } from '../store/slices/dataSlice';
+
+import { TermsPage, PrivacyPage } from '../pages/LegalPages';
 
 const MainLayout = () => {
     const dispatch = useDispatch();
@@ -15,9 +18,22 @@ const MainLayout = () => {
     const { page, userProfiles } = useSelector(state => state.profile);
     const activeProfile = useSelector(selectActiveProfile);
 
-    // Initial loading effect
+    const [publicView, setPublicView] = useState('landing'); // landing, auth, terms, privacy
+
+    // Restore session from JWT token on app load
     useEffect(() => {
-        setTimeout(() => dispatch(setLoading(false)), 500);
+        dispatch(restoreSession());
+
+        // Listen for auth:logout events (triggered on 401)
+        const handleLogout = () => {
+            dispatch(logout());
+            dispatch(resetProfile());
+            dispatch(resetData());
+            setPublicView('auth'); // Return to login screen on logout
+        };
+
+        window.addEventListener('auth:logout', handleLogout);
+        return () => window.removeEventListener('auth:logout', handleLogout);
     }, [dispatch]);
 
     // Load data when active profile changes
@@ -34,16 +50,16 @@ const MainLayout = () => {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen gradient-bg-animated">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background">
                 <div className="flex flex-col items-center gap-6 animate-in">
                     {/* Logo */}
-                    <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
-                        <Loader2 size={40} className="animate-spin text-white" />
+                    <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center shadow-xl shadow-primary/10">
+                        <Loader2 size={40} className="animate-spin text-primary" />
                     </div>
                     {/* Brand text */}
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold text-white mb-2">Fitness Tracker</h1>
-                        <p className="text-white/70 text-sm">Loading your dashboard...</p>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">Fitness Tracker</h1>
+                        <p className="text-muted-foreground text-sm">Loading your dashboard...</p>
                     </div>
                 </div>
             </div>
@@ -51,7 +67,22 @@ const MainLayout = () => {
     }
 
     if (!authUser) {
-        return <AuthPage />;
+        switch (publicView) {
+            case 'auth':
+                return <AuthPage />;
+            case 'terms':
+                return <TermsPage onBack={() => setPublicView('landing')} />;
+            case 'privacy':
+                return <PrivacyPage onBack={() => setPublicView('landing')} />;
+            default:
+                return (
+                    <LandingPage
+                        onGetStarted={() => setPublicView('auth')}
+                        onViewTerms={() => setPublicView('terms')}
+                        onViewPrivacy={() => setPublicView('privacy')}
+                    />
+                );
+        }
     }
 
     // If user has no profiles, show profile creation page
@@ -68,3 +99,4 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+

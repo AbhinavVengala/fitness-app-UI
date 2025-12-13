@@ -3,21 +3,43 @@
  * Connects frontend to Spring Boot backend
  */
 
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+// Token management
+const TOKEN_KEY = 'fitness_tracker_token';
+
+export const tokenManager = {
+    getToken: () => localStorage.getItem(TOKEN_KEY),
+    setToken: (token) => localStorage.setItem(TOKEN_KEY, token),
+    removeToken: () => localStorage.removeItem(TOKEN_KEY),
+};
 
 /**
- * Base fetch wrapper with error handling
+ * Base fetch wrapper with error handling and JWT support
  */
 async function apiFetch(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
+    const token = tokenManager.getToken();
 
     const defaultOptions = {
         headers: {
             'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` }),
         },
     };
 
-    const response = await fetch(url, { ...defaultOptions, ...options });
+    const response = await fetch(url, {
+        ...defaultOptions,
+        ...options,
+        headers: { ...defaultOptions.headers, ...options.headers }
+    });
+
+    // Handle 401 Unauthorized - token expired or invalid
+    if (response.status === 401) {
+        tokenManager.removeToken();
+        window.dispatchEvent(new CustomEvent('auth:logout'));
+        throw new Error('Session expired. Please login again.');
+    }
 
     if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Network error' }));
@@ -33,20 +55,42 @@ export const authApi = {
     /**
      * Login with email and password
      */
-    login: (email, password) =>
-        apiFetch('/auth/login', {
+    login: async (email, password) => {
+        const response = await apiFetch('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
-        }),
+        });
+        if (response.token) {
+            tokenManager.setToken(response.token);
+        }
+        return response;
+    },
 
     /**
      * Register a new user
      */
-    register: (email, password, name) =>
-        apiFetch('/auth/register', {
+    register: async (email, password, name) => {
+        const response = await apiFetch('/auth/register', {
             method: 'POST',
             body: JSON.stringify({ email, password, name }),
-        }),
+        });
+        if (response.token) {
+            tokenManager.setToken(response.token);
+        }
+        return response;
+    },
+
+    /**
+     * Get current user from token
+     */
+    getCurrentUser: () => apiFetch('/auth/me'),
+
+    /**
+     * Logout - clear token
+     */
+    logout: () => {
+        tokenManager.removeToken();
+    },
 };
 
 // ============== PROFILE API ==============

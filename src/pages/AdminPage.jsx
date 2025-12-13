@@ -96,18 +96,21 @@ const AdminPage = () => {
     );
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                Manage Foods & Exercises
-            </h1>
+        <div className="p-6 max-w-6xl mx-auto pb-10 animate-in">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-foreground">
+                    Manage Foods & Exercises
+                </h1>
+                <p className="text-muted-foreground mt-1">Add or edit database items</p>
+            </div>
 
             {/* Tabs */}
             <div className="flex gap-2 mb-6">
                 <button
                     onClick={() => { setActiveTab('foods'); setSelectedCategory('all'); }}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === 'foods'
-                            ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
-                            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all border ${activeTab === 'foods'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-lg'
+                        : 'bg-card text-muted-foreground border-border hover:bg-muted'
                         }`}
                 >
                     <Apple className="w-5 h-5" />
@@ -115,9 +118,9 @@ const AdminPage = () => {
                 </button>
                 <button
                     onClick={() => { setActiveTab('exercises'); setSelectedCategory('all'); }}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${activeTab === 'exercises'
-                            ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg'
-                            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all border ${activeTab === 'exercises'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-lg'
+                        : 'bg-card text-muted-foreground border-border hover:bg-muted'
                         }`}
                 >
                     <Dumbbell className="w-5 h-5" />
@@ -135,27 +138,29 @@ const AdminPage = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         placeholder={`Search ${activeTab}...`}
-                        className="w-full px-4 py-3 pl-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                        className="input-modern bg-background pl-12"
                     />
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 </div>
 
                 {/* Category filter */}
-                <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
-                >
-                    <option value="all">All Categories</option>
-                    {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-                    ))}
-                </select>
+                <div className="relative">
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="h-full px-4 py-3 pr-8 rounded-xl bg-background border border-border text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none min-w-[150px]"
+                    >
+                        <option value="all">All Categories</option>
+                        {categories.map(cat => (
+                            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                        ))}
+                    </select>
+                </div>
 
                 {/* Add button */}
                 <button
                     onClick={() => { setEditItem(null); setShowAddModal(true); }}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg hover:shadow-xl transition-all"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold btn-primary"
                 >
                     <Plus className="w-5 h-5" />
                     Add {activeTab === 'foods' ? 'Food' : 'Exercise'}
@@ -165,39 +170,39 @@ const AdminPage = () => {
             {/* Items Grid */}
             {isLoading ? (
                 <div className="flex justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
             ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {filteredItems.map(item => (
                         <div
                             key={item.id}
-                            className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+                            className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all shadow-sm hover:shadow-md group"
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <div>
-                                    <h3 className="font-semibold text-slate-800 dark:text-white">
+                                    <h3 className="font-semibold text-foreground truncate pr-2">
                                         {item.name}
                                     </h3>
-                                    <span className="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400">
+                                    <span className="inline-block mt-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
                                         {item.category}
                                     </span>
                                     {item.createdByUserId && (
-                                        <span className="ml-2 text-xs px-2 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                                        <span className="ml-2 inline-block text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                                             Custom
                                         </span>
                                     )}
                                 </div>
-                                <div className="flex gap-1">
+                                <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                                     <button
                                         onClick={() => { setEditItem(item); setShowAddModal(true); }}
-                                        className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
+                                        className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         <Edit2 className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(item.id)}
-                                        className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500"
+                                        className="p-2 rounded-lg hover:bg-destructive/10 text-destructive/70 hover:text-destructive transition-colors"
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </button>
@@ -205,32 +210,32 @@ const AdminPage = () => {
                             </div>
 
                             {activeTab === 'foods' ? (
-                                <div className="grid grid-cols-4 gap-2 text-xs text-slate-500 dark:text-slate-400 mt-3">
-                                    <div className="text-center p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{item.calories}</div>
-                                        <div>kcal</div>
+                                <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground mt-4 pt-3 border-t border-border">
+                                    <div className="text-center">
+                                        <div className="font-bold text-foreground text-sm">{item.calories}</div>
+                                        <div className="text-[10px] uppercase">kcal</div>
                                     </div>
-                                    <div className="text-center p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{item.protein}g</div>
-                                        <div>Protein</div>
+                                    <div className="text-center">
+                                        <div className="font-bold text-foreground text-sm">{item.protein}g</div>
+                                        <div className="text-[10px] uppercase">Prot</div>
                                     </div>
-                                    <div className="text-center p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{item.carbs}g</div>
-                                        <div>Carbs</div>
+                                    <div className="text-center">
+                                        <div className="font-bold text-foreground text-sm">{item.carbs}g</div>
+                                        <div className="text-[10px] uppercase">Carb</div>
                                     </div>
-                                    <div className="text-center p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                                        <div className="font-bold text-slate-700 dark:text-slate-200">{item.fats}g</div>
-                                        <div>Fats</div>
+                                    <div className="text-center">
+                                        <div className="font-bold text-foreground text-sm">{item.fats}g</div>
+                                        <div className="text-[10px] uppercase">Fat</div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="text-sm text-slate-500 dark:text-slate-400 mt-3">
-                                    <span className="capitalize">{item.type}</span>
+                                <div className="text-sm text-muted-foreground mt-4 pt-3 border-t border-border flex items-center gap-2">
+                                    <span className="capitalize px-2 py-0.5 bg-muted rounded text-xs font-medium">{item.type}</span>
                                     {item.type === 'reps' && item.caloriesPerRep &&
-                                        <span> • {item.caloriesPerRep} cal/rep</span>
+                                        <span>• {item.caloriesPerRep} cal/rep</span>
                                     }
                                     {item.type === 'duration' && item.met &&
-                                        <span> • MET: {item.met}</span>
+                                        <span>• MET: {item.met}</span>
                                     }
                                 </div>
                             )}
@@ -240,8 +245,8 @@ const AdminPage = () => {
             )}
 
             {filteredItems.length === 0 && !isLoading && (
-                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                    No {activeTab} found. Add some!
+                <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-2xl border border-dashed border-border mt-6">
+                    <p>No {activeTab} found matching your criteria.</p>
                 </div>
             )}
 
@@ -286,35 +291,35 @@ const ItemModal = ({ type, item, categories, onSave, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
+            <div className="bg-card rounded-3xl p-6 w-full max-w-md shadow-2xl border border-border">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                    <h2 className="text-xl font-bold text-foreground">
                         {item ? 'Edit' : 'Add'} {isFood ? 'Food' : 'Exercise'}
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <X className="w-5 h-5 text-slate-500" />
+                    <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+                        <X className="w-5 h-5 text-muted-foreground" />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Name</label>
                         <input
                             type="text"
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             required
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                            className="input-modern bg-background w-full"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Category</label>
                         <select
                             value={form.category}
                             onChange={(e) => setForm({ ...form, category: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                            className="input-modern bg-background w-full"
                         >
                             {categories.map(cat => (
                                 <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
@@ -326,44 +331,44 @@ const ItemModal = ({ type, item, categories, onSave, onClose }) => {
                         <>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Calories</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Calories</label>
                                     <input
                                         type="number"
                                         value={form.calories}
                                         onChange={(e) => setForm({ ...form, calories: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                        className="input-modern bg-background w-full"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Protein (g)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Protein (g)</label>
                                     <input
                                         type="number"
                                         step="0.1"
                                         value={form.protein}
                                         onChange={(e) => setForm({ ...form, protein: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                        className="input-modern bg-background w-full"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Carbs (g)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Carbs (g)</label>
                                     <input
                                         type="number"
                                         step="0.1"
                                         value={form.carbs}
                                         onChange={(e) => setForm({ ...form, carbs: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                        className="input-modern bg-background w-full"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fats (g)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Fats (g)</label>
                                     <input
                                         type="number"
                                         step="0.1"
                                         value={form.fats}
                                         onChange={(e) => setForm({ ...form, fats: parseFloat(e.target.value) || 0 })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                        className="input-modern bg-background w-full"
                                     />
                                 </div>
                             </div>
@@ -371,11 +376,11 @@ const ItemModal = ({ type, item, categories, onSave, onClose }) => {
                     ) : (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Type</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Type</label>
                                 <select
                                     value={form.type}
                                     onChange={(e) => setForm({ ...form, type: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                    className="input-modern bg-background w-full"
                                 >
                                     <option value="reps">Reps-based</option>
                                     <option value="duration">Duration-based</option>
@@ -383,42 +388,42 @@ const ItemModal = ({ type, item, categories, onSave, onClose }) => {
                             </div>
                             {form.type === 'reps' ? (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Calories per Rep</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Calories per Rep</label>
                                     <input
                                         type="number"
                                         step="0.1"
                                         value={form.caloriesPerRep || ''}
                                         onChange={(e) => setForm({ ...form, caloriesPerRep: parseFloat(e.target.value) || null, met: null })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                        className="input-modern bg-background w-full"
                                     />
                                 </div>
                             ) : (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">MET Value (Metabolic Equivalent)</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">MET Value</label>
                                     <input
                                         type="number"
                                         step="0.1"
                                         value={form.met || ''}
                                         onChange={(e) => setForm({ ...form, met: parseFloat(e.target.value) || null, caloriesPerRep: null })}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white"
+                                        className="input-modern bg-background w-full"
                                     />
                                 </div>
                             )}
                         </>
                     )}
 
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex gap-3 pt-6">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 py-3 px-4 rounded-xl font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            className="flex-1 py-3 px-4 rounded-xl font-semibold bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 py-3 px-4 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="flex-1 py-3 px-4 rounded-xl font-semibold btn-primary flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
