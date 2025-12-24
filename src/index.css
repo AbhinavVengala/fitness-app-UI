@@ -40,32 +40,32 @@
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
 
     --primary: 217 91% 60%;
     --primary-foreground: 222 47% 11%;
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 64%;
 
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
+    --border: 240 6% 20%;
+    --input: 240 6% 20%;
     --ring: 224 76% 48%;
   }
 
@@ -93,29 +93,53 @@
 }
 
 /* ===== Components ===== */
-.btn-primary {
-  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium shadow transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50;
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
+@layer components {
 
-.btn-primary:hover {
-  opacity: 0.9;
-}
+  /* Modal Styles */
+  .modal-surface {
+    @apply bg-white border border-gray-200 shadow-2xl;
+  }
 
-.input-modern {
-  @apply flex h-10 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50;
-  border-color: hsl(var(--input));
-}
+  .dark .modal-surface {
+    background-color: #18181b !important;
+    border-color: #27272a !important;
+  }
 
-.input-modern::placeholder {
-  color: hsl(var(--muted-foreground));
-}
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium shadow transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
 
-.card-modern {
-  @apply rounded-xl border shadow;
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .input-modern {
+    @apply flex h-10 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50;
+    border-color: hsl(var(--input));
+  }
+
+  .input-modern::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .card-modern {
+    @apply rounded-xl border shadow;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+  }
+
+  /* Autofill Overrides */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px hsl(var(--background)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    caret-color: hsl(var(--foreground));
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 /* ===== Animations ===== */

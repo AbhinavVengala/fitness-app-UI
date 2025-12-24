@@ -25,7 +25,6 @@ const MealLogger = () => {
     const [selectedFood, setSelectedFood] = useState(null);
     const [quantity, setQuantity] = useState(1);
 
-    // Load foods and categories on mount
     useEffect(() => {
         loadFoods();
         loadCategories();
@@ -34,10 +33,12 @@ const MealLogger = () => {
     const loadCategories = async () => {
         try {
             const cats = await foodsApi.getCategories();
-            setCategories(cats);
+            const smartCats = ['breakfast', 'lunch', 'dinner', 'snack'];
+            const apiCats = cats.filter(c => !smartCats.includes(c) && c !== 'snacks'); // Handle 'snacks' plural diff
+            setCategories([...smartCats, ...apiCats]);
         } catch (error) {
             console.error('Failed to load categories:', error);
-            setCategories(['indian', 'protein', 'grains', 'fruits', 'vegetables', 'dairy']);
+            setCategories(['breakfast', 'lunch', 'dinner', 'snack', 'indian', 'protein', 'grains', 'fruits', 'vegetables', 'dairy']);
         }
     };
 
@@ -75,9 +76,46 @@ const MealLogger = () => {
         return () => clearTimeout(timeoutId);
     }, [searchTerm, userId]);
 
-    const filteredFoods = foods.filter(food =>
-        activeCategory === 'all' || food.category === activeCategory
-    );
+    // Helper functions for food categorization
+    const isBreakfastItem = (food) => {
+        const name = food.name.toLowerCase();
+        const cat = food.category.toLowerCase();
+        return name.includes('oat') || name.includes('egg') || name.includes('toast') ||
+            name.includes('bread') || name.includes('cereal') || name.includes('coffee') ||
+            name.includes('tea') || name.includes('milk') || name.includes('dosa') ||
+            name.includes('idli') || name.includes('upma') || name.includes('pongal') ||
+            name.includes('paratha') || name.includes('poha') || name.includes('pancake') ||
+            cat === 'dairy' || cat === 'fruits' || cat === 'beverages';
+    };
+
+    const isMainMealItem = (food) => {
+        const name = food.name.toLowerCase();
+        return name.includes('rice') || name.includes('roti') || name.includes('chapati') ||
+            name.includes('naan') || name.includes('curry') || name.includes('dal') ||
+            name.includes('paneer') || name.includes('chicken') || name.includes('fish') ||
+            name.includes('biryani') || name.includes('pulao') || name.includes('sabzi') ||
+            name.includes('khichdi') || name.includes('salad') || name.includes('soup') ||
+            name.includes('pasta') || name.includes('burger') || name.includes('pizza');
+    };
+
+    const isSnackItem = (food) => {
+        const name = food.name.toLowerCase();
+        const cat = food.category.toLowerCase();
+        return cat === 'snacks' || cat === 'nuts' || cat === 'beverages' || cat === 'fruits' ||
+            name.includes('samosa') || name.includes('chaat') || name.includes('biscuit') ||
+            name.includes('maggi') || name.includes('sandwich') || name.includes('burger') ||
+            name.includes('fry') || name.includes('popcorn') || name.includes('chip');
+    };
+
+    const filteredFoods = foods.filter(food => {
+        if (activeCategory === 'all') return true;
+
+        if (activeCategory === 'breakfast') return isBreakfastItem(food);
+        if (activeCategory === 'lunch' || activeCategory === 'dinner') return isMainMealItem(food);
+        if (activeCategory === 'snack') return isSnackItem(food);
+
+        return food.category === activeCategory;
+    });
 
     const openAddModal = (food) => {
         setSelectedFood(food);
@@ -196,7 +234,7 @@ const MealLogger = () => {
                                     placeholder="Search foods..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="input-modern bg-background pl-12"
+                                    className="input-modern bg-background !pl-14"
                                 />
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 {isSearching && (
@@ -204,21 +242,7 @@ const MealLogger = () => {
                                 )}
                             </div>
 
-                            {/* Meal Type Selector */}
-                            <div className="flex justify-center gap-2 flex-wrap">
-                                {['breakfast', 'lunch', 'dinner', 'snack'].map(type => (
-                                    <button
-                                        key={type}
-                                        onClick={() => setMealType(type)}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-all border ${mealType === type
-                                            ? 'bg-secondary text-secondary-foreground border-secondary shadow-sm'
-                                            : 'bg-card text-muted-foreground border-border hover:bg-muted'
-                                            }`}
-                                    >
-                                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                                    </button>
-                                ))}
-                            </div>
+
 
                             {/* Category Tabs */}
                             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
@@ -260,8 +284,8 @@ const MealLogger = () => {
                                         className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group shadow-sm hover:shadow-md"
                                     >
                                         <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-foreground truncate pr-2">
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-semibold text-foreground pr-2 break-words text-sm sm:text-base">
                                                     {food.name}
                                                 </h3>
                                                 <span className="inline-block mt-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
@@ -270,7 +294,7 @@ const MealLogger = () => {
                                             </div>
                                             <button
                                                 onClick={() => openAddModal(food)}
-                                                className="p-2 rounded-lg bg-primary text-primary-foreground opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all hover:bg-primary/90 transform hover:scale-105"
+                                                className="p-2 rounded-lg bg-primary text-primary-foreground opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all hover:bg-primary/90 transform hover:scale-105 shrink-0"
                                             >
                                                 <Plus size={18} />
                                             </button>
@@ -352,7 +376,7 @@ const MealLogger = () => {
             {
                 showAddModal && selectedFood && (
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in">
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 pb-8 w-full max-w-md shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+                        <div className="modal-surface rounded-3xl p-6 pb-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
                             <div className="flex justify-between items-center mb-6">
                                 <section>
                                     <h2 className="text-xl font-bold text-foreground">

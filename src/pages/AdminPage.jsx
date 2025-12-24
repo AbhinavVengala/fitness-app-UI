@@ -15,27 +15,61 @@ const AdminPage = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [editItem, setEditItem] = useState(null);
 
+    // Pagination State
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const PAGE_SIZE = 20;
+
     // Fetch data
     useEffect(() => {
+        setPage(0); // Reset page on filter change
+    }, [activeTab, selectedCategory, searchQuery]);
+
+    useEffect(() => {
         loadData();
-    }, [activeTab, selectedCategory, userId]);
+    }, [page, activeTab, selectedCategory, userId]); // Reload when page changes
 
     const loadData = async () => {
         setIsLoading(true);
         try {
-            const api = activeTab === 'foods' ? foodsApi : exercisesApi;
-
             let data;
-            if (selectedCategory === 'all') {
-                data = await api.getAll(userId);
+            if (activeTab === 'foods') {
+                // Paginated Food API
+                if (searchQuery.trim()) {
+                    data = await foodsApi.search(searchQuery, userId, page, PAGE_SIZE);
+                    setItems(data.content || []);
+                    setTotalPages(data.totalPages || 0);
+                } else if (selectedCategory === 'all') {
+                    data = await foodsApi.getAll(userId, page, PAGE_SIZE);
+                    setItems(data.content || []);
+                    setTotalPages(data.totalPages || 0);
+                } else {
+                    data = await foodsApi.getByCategory(selectedCategory, userId, page, PAGE_SIZE);
+                    setItems(data.content || []);
+                    setTotalPages(data.totalPages || 0);
+                }
             } else {
-                data = await api.getByCategory(selectedCategory, userId);
-            }
-            setItems(data);
+                // Non-paginated Exercises API (Existing logic)
+                const api = exercisesApi;
+                if (selectedCategory === 'all') {
+                    data = await api.getAll(userId);
+                } else {
+                    data = await api.getByCategory(selectedCategory, userId);
+                }
 
-            // Load categories
-            const cats = await api.getCategories();
-            setCategories(cats);
+                // Client-side filtering for exercises matching search query
+                if (searchQuery.trim()) {
+                    data = await api.search(searchQuery, userId);
+                }
+                setItems(data);
+                setTotalPages(0);
+            }
+
+            // Load categories only once
+            if (categories.length === 0) {
+                const cats = await (activeTab === 'foods' ? foodsApi : exercisesApi).getCategories();
+                setCategories(cats);
+            }
         } catch (error) {
             console.error('Failed to load data:', error);
         } finally {
@@ -43,22 +77,17 @@ const AdminPage = () => {
         }
     };
 
-    const handleSearch = async () => {
-        if (!searchQuery.trim()) {
-            loadData();
-            return;
-        }
-        setIsLoading(true);
-        try {
-            const api = activeTab === 'foods' ? foodsApi : exercisesApi;
-            const data = await api.search(searchQuery, userId);
-            setItems(data);
-        } catch (error) {
-            console.error('Search failed:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Debounced Search (Effect handles loading)
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (searchQuery.trim()) {
+                loadData();
+            }
+        }, 500);
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery]);
+
+
 
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this item?')) return;
@@ -91,7 +120,8 @@ const AdminPage = () => {
         }
     };
 
-    const filteredItems = items.filter(item =>
+    // Filter logic moved to backend for Foods, kept for Exercises
+    const filteredItems = activeTab === 'foods' ? items : items.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -247,6 +277,29 @@ const AdminPage = () => {
             {filteredItems.length === 0 && !isLoading && (
                 <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-2xl border border-dashed border-border mt-6">
                     <p>No {activeTab} found matching your criteria.</p>
+                </div>
+            )}
+
+            {/* Pagination Controls (Foods Only for now) */}
+            {activeTab === 'foods' && totalPages > 1 && (
+                <div className="flex justify-center gap-4 mt-8">
+                    <button
+                        onClick={() => setPage(p => Math.max(0, p - 1))}
+                        disabled={page === 0}
+                        className="px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                    >
+                        Previous
+                    </button>
+                    <span className="flex items-center px-4 font-medium">
+                        Page {page + 1} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={page >= totalPages - 1}
+                        className="px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                    >
+                        Next
+                    </button>
                 </div>
             )}
 

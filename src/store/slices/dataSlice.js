@@ -1,11 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { foodLogApi, workoutLogApi, profileApi } from '../../api';
 
-// ============== ASYNC THUNKS ==============
+// Async Thunks
 
-/**
- * Fetch today's data from API
- */
 export const fetchTodayData = createAsyncThunk(
   'data/fetchToday',
   async (profileId, { rejectWithValue }) => {
@@ -25,9 +22,6 @@ export const fetchTodayData = createAsyncThunk(
   }
 );
 
-/**
- * Add food item via API
- */
 export const addFoodAsync = createAsyncThunk(
   'data/addFood',
   async ({ profileId, food }, { rejectWithValue }) => {
@@ -40,9 +34,6 @@ export const addFoodAsync = createAsyncThunk(
   }
 );
 
-/**
- * Remove food item via API
- */
 export const removeFoodAsync = createAsyncThunk(
   'data/removeFood',
   async ({ profileId, foodId }, { rejectWithValue }) => {
@@ -55,9 +46,6 @@ export const removeFoodAsync = createAsyncThunk(
   }
 );
 
-/**
- * Add/update workout via API
- */
 export const addWorkoutAsync = createAsyncThunk(
   'data/addWorkout',
   async ({ profileId, workout }, { rejectWithValue }) => {
@@ -70,9 +58,6 @@ export const addWorkoutAsync = createAsyncThunk(
   }
 );
 
-/**
- * Update workout via API
- */
 export const updateWorkoutAsync = createAsyncThunk(
   'data/updateWorkout',
   async ({ profileId, workoutId, workout }, { rejectWithValue }) => {
@@ -85,9 +70,6 @@ export const updateWorkoutAsync = createAsyncThunk(
   }
 );
 
-/**
- * Remove workout via API
- */
 export const removeWorkoutAsync = createAsyncThunk(
   'data/removeWorkout',
   async ({ profileId, workoutId }, { rejectWithValue }) => {
@@ -100,9 +82,6 @@ export const removeWorkoutAsync = createAsyncThunk(
   }
 );
 
-/**
- * Update goals via API
- */
 export const updateGoalsAsync = createAsyncThunk(
   'data/updateGoals',
   async ({ userId, profileId, goals }, { rejectWithValue }) => {
@@ -115,9 +94,6 @@ export const updateGoalsAsync = createAsyncThunk(
   }
 );
 
-/**
- * Update water intake via API
- */
 export const updateWaterAsync = createAsyncThunk(
   'data/updateWater',
   async ({ userId, profileId, waterIntake }, { rejectWithValue }) => {
@@ -129,8 +105,6 @@ export const updateWaterAsync = createAsyncThunk(
     }
   }
 );
-
-// ============== SLICE ==============
 
 const dataSlice = createSlice({
   name: 'data',

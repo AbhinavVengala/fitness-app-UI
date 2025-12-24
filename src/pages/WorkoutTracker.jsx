@@ -175,7 +175,7 @@ const WorkoutTracker = () => {
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                     placeholder="Search exercises..."
-                                    className="input-modern bg-background pl-12"
+                                    className="input-modern bg-background !pl-14"
                                 />
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                             </div>
@@ -309,7 +309,7 @@ const WorkoutTracker = () => {
             {/* Add Workout Modal */}
             {showAddModal && selectedExercise && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in">
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 pb-8 w-full max-w-md shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+                    <div className="modal-surface rounded-3xl p-6 pb-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-foreground">
                                 Log {selectedExercise.name}

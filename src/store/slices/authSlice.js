@@ -2,9 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authApi, tokenManager } from '../../api';
 import { setActiveProfileId, loadUserProfiles, setUserId } from './profileSlice';
 
-/**
- * Restore session from stored token
- */
 export const restoreSession = createAsyncThunk(
   'auth/restoreSession',
   async (_, { dispatch, rejectWithValue }) => {
@@ -16,7 +13,6 @@ export const restoreSession = createAsyncThunk(
     try {
       const response = await authApi.getCurrentUser();
 
-      // Restore user data
       dispatch(setUserId(response.id));
       dispatch(loadUserProfiles(response.profiles || []));
 
@@ -32,20 +28,15 @@ export const restoreSession = createAsyncThunk(
   }
 );
 
-/**
- * Login async thunk - authenticates user via API
- */
 export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
       const response = await authApi.login(email, password);
 
-      // Store user ID and load profiles into profile slice
       dispatch(setUserId(response.id));
       dispatch(loadUserProfiles(response.profiles || []));
 
-      // Set first profile as active if available
       if (response.profiles && response.profiles.length > 0) {
         dispatch(setActiveProfileId(response.profiles[0].id));
       }
@@ -57,20 +48,15 @@ export const login = createAsyncThunk(
   }
 );
 
-/**
- * Register async thunk - creates new user via API
- */
 export const register = createAsyncThunk(
   'auth/register',
   async ({ email, password, name }, { dispatch, rejectWithValue }) => {
     try {
       const response = await authApi.register(email, password, name);
 
-      // Store user ID and load profiles
       dispatch(setUserId(response.id));
       dispatch(loadUserProfiles(response.profiles || []));
 
-      // Set first profile as active
       if (response.profiles && response.profiles.length > 0) {
         dispatch(setActiveProfileId(response.profiles[0].id));
       }

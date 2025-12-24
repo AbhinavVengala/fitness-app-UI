@@ -97,15 +97,15 @@ const AppShell = ({ page }) => {
                                 </button>
 
                                 {showProfileSwitcher && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-border overflow-hidden animate-in">
+                                    <div className="absolute right-0 mt-2 w-56 modal-surface rounded-xl overflow-hidden animate-in">
                                         <div className="p-2">
                                             {userProfiles.map(p => (
                                                 <button
                                                     key={p.id}
                                                     onClick={() => handleProfileSwitch(p.id)}
                                                     className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${p.id === activeProfile?.id
-                                                        ? 'bg-primary/10 text-primary'
-                                                        : 'hover:bg-muted text-foreground'
+                                                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
+                                                        : 'hover:bg-gray-100 dark:hover:bg-[#27272a] text-gray-700 dark:text-gray-200'
                                                         }`}
                                                 >
                                                     {p.name}
@@ -115,7 +115,7 @@ const AppShell = ({ page }) => {
                                         <div className="border-t border-border p-2">
                                             <button
                                                 onClick={handleNavigateToProfile}
-                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#27272a] transition-colors"
                                             >
                                                 <Settings className="w-4 h-4" />
                                                 Profile Settings
@@ -125,7 +125,7 @@ const AppShell = ({ page }) => {
                                                     setShowFeedback(true);
                                                     setShowProfileSwitcher(false);
                                                 }}
-                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#27272a] transition-colors"
                                             >
                                                 <MessageSquare className="w-4 h-4" />
                                                 Give Feedback
@@ -134,7 +134,7 @@ const AppShell = ({ page }) => {
                                         <div className="border-t border-border p-2">
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                                                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
                                             >
                                                 <LogOut className="w-4 h-4" />
                                                 Logout

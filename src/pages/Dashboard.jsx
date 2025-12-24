@@ -211,7 +211,7 @@ const Dashboard = () => {
             {/* Water Modal */}
             {showWaterModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-border">
+                    <div className="modal-surface rounded-3xl p-6 w-full max-w-sm">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                                 <span className="p-2 bg-cyan-100 text-cyan-600 rounded-full dark:bg-cyan-900/30">
@@ -254,7 +254,7 @@ const Dashboard = () => {
                                 <span className="w-full border-t border-border" />
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-white dark:bg-slate-900 px-2 text-muted-foreground">Or custom amount</span>
+                                <span className="modal-surface px-2 text-muted-foreground border-none shadow-none">Or custom amount</span>
                             </div>
                         </div>
 

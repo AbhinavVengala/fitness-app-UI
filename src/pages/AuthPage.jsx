@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Loader2, UserPlus, LogIn, Mail, Lock, User, Dumbbell } from 'lucide-react';
 import { login, register, clearError } from '../store/slices/authSlice';
 import ThemeToggle from '../components/ThemeToggle';
@@ -96,6 +97,12 @@ const AuthPage = () => {
                             className="input-modern bg-background !pl-14"
                             required
                         />
+                    </div>
+
+                    <div className="flex justify-end mt-2 mb-4">
+                        <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
+                            Forgot Password?
+                        </Link>
                     </div>
 
                     <button

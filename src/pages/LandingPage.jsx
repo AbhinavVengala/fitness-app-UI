@@ -31,15 +31,15 @@ const LandingPage = ({ onGetStarted, onViewTerms, onViewPrivacy }) => {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                             </span>
-                            New: Water Intake Tracking
+                            New: Extensive Indian Food Database 🍛
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-balance animate-in fade-in slide-in-from-bottom-6 duration-700">
-                            Master your health with <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">smart insights</span>.
+                            Fitness tracking, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">tailored for you</span>.
                         </h1>
 
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-balance animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                            Effortlessly track calories, monitor hydration, and visualize your fitness journey. The all-in-one companion for your better self.
+                            The only tracker with built-in support for <strong className="text-foreground">Indian cuisine</strong>. Log Dal, Roti, and Paneer accurately. Private, fast, and beautiful.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
@@ -47,7 +47,7 @@ const LandingPage = ({ onGetStarted, onViewTerms, onViewPrivacy }) => {
                                 onClick={onGetStarted}
                                 className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-primary/25 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group"
                             >
-                                Get Started Free
+                                Start Your Journey
                                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
                             <button className="hidden sm:flex w-full sm:w-auto px-8 py-4 bg-muted text-foreground rounded-2xl font-bold text-lg hover:bg-muted/80 transition-all">
@@ -63,21 +63,21 @@ const LandingPage = ({ onGetStarted, onViewTerms, onViewPrivacy }) => {
                         <div className="grid md:grid-cols-3 gap-8">
                             <FeatureCard
                                 icon={Apple}
-                                title="Smart Calorie Logging"
-                                desc="Log meals in seconds with our verified food database. Track macros and hit your goals."
-                                color="bg-green-500/10 text-green-600"
+                                title="Authentic Indian Database"
+                                desc="Finally, a tracker that knows a Samosa from a Salad. Comprehensive calorie counts for home-cooked Indian meals."
+                                color="bg-orange-500/10 text-orange-600"
                             />
                             <FeatureCard
                                 icon={Droplets}
-                                title="Hydration Tracking"
-                                desc="Stay hydrated with the new Water Tracker. Quick-add presets make logging effortless."
+                                title="Smart Hydration"
+                                desc="Track your water intake with one tap. Set daily goals and get gentle reminders to stay hydrated."
                                 color="bg-cyan-500/10 text-cyan-600"
                             />
                             <FeatureCard
-                                icon={TrendingUp}
-                                title="Visual Analytics"
-                                desc="See your progress with beautiful interactive charts. Understand your habits at a glance."
-                                color="bg-purple-500/10 text-purple-600"
+                                icon={Shield}
+                                title="Privacy First"
+                                desc="We believe your health data is private. No tracking pixels, no data selling, just honest metrics."
+                                color="bg-green-500/10 text-green-600"
                             />
                         </div>
                     </div>
@@ -86,24 +86,24 @@ const LandingPage = ({ onGetStarted, onViewTerms, onViewPrivacy }) => {
                 {/* Social Proof / Trust */}
                 <section className="py-20 px-6 border-t border-border">
                     <div className="max-w-4xl mx-auto text-center space-y-12">
-                        <h2 className="text-3xl font-bold">Why choose Fitness Tracker?</h2>
+                        <h2 className="text-3xl font-bold">Why we are different?</h2>
                         <div className="grid sm:grid-cols-2 gap-8">
                             <div className="flex gap-4 text-left p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-colors">
                                 <div className="p-3 bg-primary/10 rounded-xl h-fit">
-                                    <Shield className="w-6 h-6 text-primary" />
+                                    <TrendingUp className="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg mb-2">Privacy First</h3>
-                                    <p className="text-muted-foreground">Your health data is yours. We encrypt everything and never sell your personal information.</p>
+                                    <h3 className="font-bold text-lg mb-2">Macro-Focused</h3>
+                                    <p className="text-muted-foreground">Specifically designed for hitting protein and tracking carb intake for Indian diets.</p>
                                 </div>
                             </div>
                             <div className="flex gap-4 text-left p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-colors">
-                                <div className="p-3 bg-orange-500/10 rounded-xl h-fit">
-                                    <Zap className="w-6 h-6 text-orange-600" />
+                                <div className="p-3 bg-purple-500/10 rounded-xl h-fit">
+                                    <Zap className="w-6 h-6 text-purple-600" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg mb-2">Lightning Fast</h3>
-                                    <p className="text-muted-foreground">Built for speed. Log measurements in seconds so you can get back to your workout.</p>
+                                    <p className="text-muted-foreground">No ads, no bloat. Log your entire lunch in under 10 seconds.</p>
                                 </div>
                             </div>
                         </div>
