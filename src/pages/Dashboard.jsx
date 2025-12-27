@@ -119,27 +119,39 @@ const Dashboard = () => {
                 {/* Calorie Progress Chart */}
                 <Card className="col-span-1 lg:col-span-2 flex flex-col sm:flex-row items-center gap-8">
                     <div className="relative w-48 h-48 flex-shrink-0">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    dataKey="value"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    startAngle={90}
-                                    endAngle={-270}
-                                    paddingAngle={0}
-                                    cornerRadius={10}
-                                    stroke="none"
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <div className="relative z-20 w-full h-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        dataKey="value"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        startAngle={90}
+                                        endAngle={-270}
+                                        paddingAngle={0}
+                                        cornerRadius={10}
+                                        stroke="none"
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: 'hsl(var(--card))',
+                                            borderColor: 'hsl(var(--border))',
+                                            borderRadius: '8px',
+                                            color: 'hsl(var(--foreground))',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                            opacity: 1
+                                        }}
+                                        itemStyle={{ color: 'hsl(var(--foreground))' }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
                             <span className="text-3xl font-bold text-foreground">{netCalories.toFixed(0)}</span>
                             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Net Kcal</span>
                         </div>

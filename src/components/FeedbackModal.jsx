@@ -29,12 +29,19 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         }, 2000);
     };
 
+    const handleClose = () => {
+        setRating(0);
+        setComment('');
+        setIsSuccess(false);
+        onClose();
+    };
+
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-200">
             <div className="modal-surface rounded-3xl p-6 w-full max-w-md relative">
 
                 <button
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="absolute top-4 right-4 p-2 hover:bg-muted rounded-full transition-colors"
                 >
                     <X className="w-5 h-5 text-muted-foreground" />
@@ -99,7 +106,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                             <button
                                 type="submit"
                                 disabled={rating === 0 || isSubmitting}
-                                className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-lg hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                                className="btn-primary w-full py-4 text-lg hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                             >
                                 {isSubmitting ? (
                                     <>

@@ -199,6 +199,9 @@ export const foodsApi = {
     getByCategory: (category, userId) =>
         apiFetch(`/foods/category/${category}${userId ? `?userId=${userId}` : ''}`),
 
+    getByBarcode: (barcode) =>
+        apiFetch(`/foods/barcode/${barcode}`),
+
     getCategories: () =>
         apiFetch('/foods/categories'),
 
