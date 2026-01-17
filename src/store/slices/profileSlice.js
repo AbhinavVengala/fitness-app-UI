@@ -6,6 +6,7 @@ const profileSlice = createSlice({
     userId: null,           // Backend user ID
     userProfiles: [],       // Array of profiles
     activeProfileId: null,  // Currently selected profile ID
+    selectedRestaurantId: null, // Currently selected restaurant for details view
     page: 'dashboard',      // Current page
   },
   reducers: {
@@ -17,6 +18,9 @@ const profileSlice = createSlice({
     },
     setActiveProfileId: (state, action) => {
       state.activeProfileId = action.payload;
+    },
+    setSelectedRestaurantId: (state, action) => {
+      state.selectedRestaurantId = action.payload;
     },
     updateProfileInStore: (state, action) => {
       const { profileId, updates } = action.payload;
@@ -31,6 +35,7 @@ const profileSlice = createSlice({
       state.userId = null;
       state.userProfiles = [];
       state.activeProfileId = null;
+      state.selectedRestaurantId = null;
       state.page = 'dashboard';
     }
   },
@@ -40,6 +45,7 @@ export const {
   setUserId,
   loadUserProfiles,
   setActiveProfileId,
+  setSelectedRestaurantId,
   updateProfileInStore,
   setPage,
   resetProfile
@@ -50,6 +56,8 @@ export const selectActiveProfile = (state) => {
   if (!activeProfileId || !userProfiles) return null;
   return userProfiles.find(p => p.id === activeProfileId);
 };
+
+export const selectSelectedRestaurantId = (state) => state.profile.selectedRestaurantId;
 
 export const selectUserId = (state) => state.profile.userId;
 

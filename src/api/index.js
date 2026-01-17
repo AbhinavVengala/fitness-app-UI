@@ -17,7 +17,7 @@ export const tokenManager = {
 /**
  * Base fetch wrapper with error handling and JWT support
  */
-async function apiFetch(endpoint, options = {}) {
+export async function apiFetch(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const token = tokenManager.getToken();
 
@@ -120,6 +120,12 @@ export const profileApi = {
     updateWaterIntake: (userId, profileId, waterIntake) =>
         apiFetch(`/users/${userId}/profiles/${profileId}/water`, {
             method: 'PUT',
+            body: JSON.stringify({ waterIntake }),
+        }),
+
+    addWaterIntake: (userId, profileId, waterIntake) =>
+        apiFetch(`/users/${userId}/profiles/${profileId}/water/add`, {
+            method: 'POST',
             body: JSON.stringify({ waterIntake }),
         }),
 };
@@ -276,6 +282,10 @@ export const exercisesApi = {
         }),
 };
 
+export const restaurantsApi = {
+    getAll: () => apiFetch('/restaurants'),
+};
+
 export default {
     auth: authApi,
     profile: profileApi,
@@ -283,5 +293,6 @@ export default {
     workoutLog: workoutLogApi,
     foods: foodsApi,
     exercises: exercisesApi,
+    restaurants: restaurantsApi,
 };
 

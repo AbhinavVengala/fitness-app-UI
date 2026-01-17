@@ -188,7 +188,7 @@ const Dashboard = () => {
 
                     <button
                         onClick={() => dispatch(setPage('mealLogger'))}
-                        className="group flex items-center justify-between p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
+                        className="group flex items-center justify-between p-4 rounded-xl border border-border hover:border-green-500/50 hover:bg-green-500/5 transition-all text-left"
                     >
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-green-100 text-green-600 rounded-lg dark:bg-green-900/30">
@@ -199,7 +199,7 @@ const Dashboard = () => {
                                 <p className="text-xs text-muted-foreground">Track breakfast, lunch, or snacks</p>
                             </div>
                         </div>
-                        <ArrowRight size={18} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                        <ArrowRight size={18} className="text-muted-foreground group-hover:text-green-500 transition-colors" />
                     </button>
 
                     <button
@@ -247,7 +247,7 @@ const Dashboard = () => {
                                         dispatch(updateWaterAsync({
                                             userId,
                                             profileId: activeProfile.id,
-                                            waterIntake: (dailyTotals.water || 0) + amount
+                                            amount: amount
                                         }));
                                         setShowWaterModal(false);
                                     }}
@@ -278,7 +278,7 @@ const Dashboard = () => {
                                     dispatch(updateWaterAsync({
                                         userId,
                                         profileId: activeProfile.id,
-                                        waterIntake: (dailyTotals.water || 0) + val
+                                        amount: val
                                     }));
                                     setShowWaterModal(false);
                                 }

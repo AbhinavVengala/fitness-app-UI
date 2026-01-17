@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../pages/Dashboard';
 import MealLogger from '../pages/MealLogger';
 import WorkoutTracker from '../pages/WorkoutTracker';
 import SettingsPage from '../pages/SettingsPage';
 import AdminPage from '../pages/AdminPage';
 import HistoryPage from '../pages/HistoryPage';
+import FoodOrderPage from '../pages/FoodOrderPage';
+import RestaurantPage from '../pages/RestaurantPage';
+import CartPage from '../pages/CartPage';
+import PaymentPage from '../pages/PaymentPage';
 import { UserCircle, LogOut, ChevronDown, Settings } from 'lucide-react';
 import { logout } from '../store/slices/authSlice';
 import { setActiveProfileId, resetProfile, selectActiveProfile, setPage } from '../store/slices/profileSlice';
@@ -15,12 +19,14 @@ import Navbar from '../components/Navbar';
 import MobileNavbar from '../components/MobileNavbar';
 import ThemeToggle from '../components/ThemeToggle';
 import FeedbackModal from '../components/FeedbackModal';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, ShoppingBag } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 const AppShell = ({ page }) => {
     const dispatch = useDispatch();
     const activeProfile = useSelector(selectActiveProfile);
     const { userProfiles } = useSelector(state => state.profile);
+    const { cartItems } = useCart();
     const [showProfileSwitcher, setShowProfileSwitcher] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
 
@@ -50,6 +56,10 @@ const AppShell = ({ page }) => {
             case 'dashboard': return <Dashboard />;
             case 'mealLogger': return <MealLogger />;
             case 'workoutTracker': return <WorkoutTracker />;
+            case 'foodOrder': return <FoodOrderPage />;
+            case 'restaurant': return <RestaurantPage />;
+            case 'cart': return <CartPage />;
+            case 'payment': return <PaymentPage />;
             case 'history': return <HistoryPage />;
             case 'profile': return <SettingsPage />;
             case 'settings': return <SettingsPage />;
@@ -65,7 +75,10 @@ const AppShell = ({ page }) => {
                 <div className="max-w-6xl mx-auto px-4">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
-                        <div className="flex items-center gap-3">
+                        <div
+                            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => dispatch(setPage('dashboard'))}
+                        >
                             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
                                 <span className="text-primary-foreground font-bold text-lg">F</span>
                             </div>
@@ -129,6 +142,23 @@ const AppShell = ({ page }) => {
                                             >
                                                 <MessageSquare className="w-4 h-4" />
                                                 Give Feedback
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    dispatch(setPage('cart'));
+                                                    setShowProfileSwitcher(false);
+                                                }}
+                                                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-foreground dark:text-white hover:bg-secondary transition-colors"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <ShoppingBag className="w-4 h-4" />
+                                                    My Cart
+                                                </div>
+                                                {(cartItems?.reduce((acc, item) => acc + item.quantity, 0) || 0) > 0 && (
+                                                    <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                                                        {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                                                    </span>
+                                                )}
                                             </button>
                                         </div>
                                         <div className="border-t border-border p-2">

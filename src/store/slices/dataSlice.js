@@ -96,9 +96,9 @@ export const updateGoalsAsync = createAsyncThunk(
 
 export const updateWaterAsync = createAsyncThunk(
   'data/updateWater',
-  async ({ userId, profileId, waterIntake }, { rejectWithValue }) => {
+  async ({ userId, profileId, amount }, { rejectWithValue }) => {
     try {
-      const response = await profileApi.updateWaterIntake(userId, profileId, waterIntake);
+      const response = await profileApi.addWaterIntake(userId, profileId, amount);
       return response.waterIntake;
     } catch (error) {
       return rejectWithValue(error.message);
