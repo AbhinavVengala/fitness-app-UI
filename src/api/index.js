@@ -196,14 +196,29 @@ export const workoutLogApi = {
 
 // Food Database API
 export const foodsApi = {
-    getAll: (userId) =>
-        apiFetch(`/foods${userId ? `?userId=${userId}` : ''}`),
+    getAll: (userId, page, size) => {
+        const params = new URLSearchParams();
+        if (userId) params.set('userId', userId);
+        if (page != null) params.set('page', page);
+        if (size != null) params.set('size', size);
+        return apiFetch(`/foods?${params.toString()}`);
+    },
 
-    search: (query, userId) =>
-        apiFetch(`/foods/search?q=${encodeURIComponent(query)}${userId ? `&userId=${userId}` : ''}`),
+    search: (query, userId, page, size) => {
+        const params = new URLSearchParams({ q: query });
+        if (userId) params.set('userId', userId);
+        if (page != null) params.set('page', page);
+        if (size != null) params.set('size', size);
+        return apiFetch(`/foods/search?${params.toString()}`);
+    },
 
-    getByCategory: (category, userId) =>
-        apiFetch(`/foods/category/${category}${userId ? `?userId=${userId}` : ''}`),
+    getByCategory: (category, userId, page, size) => {
+        const params = new URLSearchParams();
+        if (userId) params.set('userId', userId);
+        if (page != null) params.set('page', page);
+        if (size != null) params.set('size', size);
+        return apiFetch(`/foods/category/${category}?${params.toString()}`);
+    },
 
     getByBarcode: (barcode) =>
         apiFetch(`/foods/barcode/${barcode}`),
@@ -284,6 +299,49 @@ export const exercisesApi = {
 
 export const restaurantsApi = {
     getAll: () => apiFetch('/restaurants'),
+
+    create: (restaurant) =>
+        apiFetch('/restaurants', {
+            method: 'POST',
+            body: JSON.stringify(restaurant),
+        }),
+
+    update: (id, restaurant) =>
+        apiFetch(`/restaurants/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(restaurant),
+        }),
+
+    delete: (id) =>
+        apiFetch(`/restaurants/${id}`, {
+            method: 'DELETE',
+        }),
+};
+
+// Orders API (Admin)
+export const ordersApi = {
+    getAll: () =>
+        apiFetch('/orders'),
+
+    getByUser: (userId) =>
+        apiFetch(`/orders/user/${userId}`),
+
+    create: (order) =>
+        apiFetch('/orders', {
+            method: 'POST',
+            body: JSON.stringify(order),
+        }),
+
+    update: (id, order) =>
+        apiFetch(`/orders/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(order),
+        }),
+
+    delete: (id) =>
+        apiFetch(`/orders/${id}`, {
+            method: 'DELETE',
+        }),
 };
 
 export default {
@@ -294,5 +352,6 @@ export default {
     foods: foodsApi,
     exercises: exercisesApi,
     restaurants: restaurantsApi,
+    orders: ordersApi,
 };
 

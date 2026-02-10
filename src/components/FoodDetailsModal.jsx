@@ -28,7 +28,7 @@ const FoodDetailsModal = ({ item, onClose, restaurant }) => {
     ];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div
                 className="modal-surface w-full max-w-md rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
                 onClick={e => e.stopPropagation()}

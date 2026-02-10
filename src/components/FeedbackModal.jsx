@@ -16,7 +16,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        console.log('Feedback submitted:', { rating, comment });
+
         setIsSuccess(true);
         setIsSubmitting(false);
 
@@ -37,7 +37,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-200">
             <div className="modal-surface rounded-3xl p-6 w-full max-w-md relative">
 
                 <button

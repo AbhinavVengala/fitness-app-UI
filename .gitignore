@@ -1,24 +1,65 @@
-# Logs
-logs
-*.log
+# ===== Core =====
+.env
+.env.*
+!.env.example
+
+# ===== Build & Dist =====
+target/
+dist/
+build/
+out/
+classes/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# ===== Java / Maven / Gradle =====
+.mvn/
+mvnw
+mvnw.cmd
+.gradle/
+gradlew
+gradlew.bat
+dependency-reduced-pom.xml
+
+# ===== Node / Web =====
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
+.npm/
 
-node_modules
-dist
-dist-ssr
-*.local
+# ===== IDE / Editor =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.iml
+.classpath
+.project
+.settings/
+.factorypath
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# ===== OS Generated =====
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===== Project Specific =====
+fitness-app-UI/android/.gradle/
+fitness-app-UI/android/app/build/
+fitness-app-UI/android/app/release/
+fitness-app-UI/android/*.keystore
+fitness-app-UI/ios/App/Pods/
+fitness-app-UI/ios/DerivedData/

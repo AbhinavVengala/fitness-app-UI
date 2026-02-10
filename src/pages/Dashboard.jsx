@@ -222,7 +222,7 @@ const Dashboard = () => {
 
             {/* Water Modal */}
             {showWaterModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
+                <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
                     <div className="modal-surface rounded-3xl p-6 w-full max-w-sm">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-foreground flex items-center gap-2">

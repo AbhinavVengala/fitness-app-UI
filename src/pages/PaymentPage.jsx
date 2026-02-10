@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setPage } from '../store/slices/profileSlice';
 import { apiFetch } from '../api';
 import { ArrowLeft, CreditCard, ShieldCheck } from 'lucide-react';
@@ -9,6 +9,7 @@ const PaymentPage = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
     const dispatch = useDispatch();
     const [processing, setProcessing] = useState(false);
+    const user = useSelector(state => state.auth?.user);
 
     const totalAmount = (cartTotal * 1.05).toFixed(2); // Including 5% tax
 
@@ -20,6 +21,7 @@ const PaymentPage = () => {
                 totalAmount: parseFloat(totalAmount)
             };
 
+            // Create order via backend
             const orderRes = await apiFetch('/payment/create-order', {
                 method: 'POST',
                 body: JSON.stringify(orderData)
@@ -27,42 +29,53 @@ const PaymentPage = () => {
 
             if (!orderRes) throw new Error("Order creation failed");
 
+            // Initialize Razorpay checkout
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_placeholder",
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: orderRes.totalAmount * 100,
                 currency: "INR",
-                name: "Fitness Tracker Foods",
+                name: "Fitness Tracker",
                 description: "Healthy Food Order",
                 order_id: orderRes.razorpayOrderId,
                 handler: async function (response) {
-                    await apiFetch('/payment/verify', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature
-                        })
-                    });
+                    try {
+                        await apiFetch('/payment/verify', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
 
-                    alert("Order Placed Successfully!");
-                    clearCart();
-                    dispatch(setPage('dashboard'));
+                        alert("Order Placed Successfully!");
+                        clearCart();
+                        dispatch(setPage('dashboard'));
+                    } catch (verifyError) {
+                        alert("Payment verification failed. Please contact support.");
+                    }
                 },
                 prefill: {
-                    name: "Abhi User",
-                    email: "abhi@example.com",
-                    contact: "9999999999"
+                    email: user?.email || "",
                 },
                 theme: {
-                    color: "#0f172a"
+                    color: "#4f46e5"
+                },
+                modal: {
+                    ondismiss: function () {
+                        setProcessing(false);
+                    }
                 }
             };
 
             const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response) {
+                alert("Payment failed. Please try again.");
+                setProcessing(false);
+            });
             rzp.open();
 
         } catch (error) {
-            console.error("Payment failed", error);
             alert("Payment initialization failed. Please try again.");
         } finally {
             setProcessing(false);
@@ -95,7 +108,7 @@ const PaymentPage = () => {
                         <ShieldCheck className="w-5 h-5 text-green-500 mt-0.5" />
                         <div>
                             <h4 className="font-medium text-foreground text-sm">Safe & Secure</h4>
-                            <p className="text-xs text-muted-foreground">Your transaction is encrypted and secured.</p>
+                            <p className="text-xs text-muted-foreground">Your transaction is encrypted and secured via Razorpay.</p>
                         </div>
                     </div>
                 </div>

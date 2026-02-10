@@ -52,7 +52,7 @@ const MealLogger = () => {
         setIsLoadingFoods(true);
         try {
             const data = await foodsApi.getAll(userId);
-            setFoods(data);
+            setFoods(data.content || data);
         } catch (error) {
             console.error('Failed to load foods:', error);
         } finally {
@@ -71,7 +71,7 @@ const MealLogger = () => {
             setIsSearching(true);
             try {
                 const results = await foodsApi.search(searchTerm, userId);
-                setFoods(results);
+                setFoods(results.content || results);
             } catch (error) {
                 console.error('Food search error:', error);
             } finally {
@@ -414,7 +414,7 @@ const MealLogger = () => {
             {/* Add Food Modal with Quantity */}
             {
                 showAddModal && selectedFood && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in">
+                    <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in">
                         <div className="modal-surface rounded-3xl p-5 w-full max-w-md shadow-2xl">
                             <div className="flex justify-between items-center mb-4">
                                 <section>
