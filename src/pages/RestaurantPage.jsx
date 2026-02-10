@@ -237,7 +237,7 @@ const RestaurantPage = () => {
 
             {
                 cartItems.length > 0 && (
-                    <div className="fixed bottom-6 left-4 right-4 z-40 animate-in slide-in-from-bottom-5 fade-in duration-300">
+                    <div className="fixed bottom-24 left-4 right-4 z-40 animate-in slide-in-from-bottom-5 fade-in duration-300">
                         <button
                             onClick={() => dispatch(setPage('cart'))}
                             className="w-full bg-slate-900/90 backdrop-blur-xl text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between group border border-white/10 hover:bg-slate-900 transition-all dark:bg-white/10 dark:hover:bg-white/20"
