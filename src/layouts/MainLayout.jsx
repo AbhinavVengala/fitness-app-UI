@@ -7,8 +7,9 @@ import ProfileCreationPage from '../pages/ProfileCreationPage';
 import AppShell from './AppShell';
 import { Loader2 } from 'lucide-react';
 import { restoreSession, logout, setLoading } from '../store/slices/authSlice';
-import { resetProfile, selectActiveProfile } from '../store/slices/profileSlice';
+import { resetProfile, selectActiveProfile, loadUserProfiles } from '../store/slices/profileSlice';
 import { resetData, fetchTodayData, setGoals, setWaterIntake } from '../store/slices/dataSlice';
+import { profileApi } from '../api';
 
 import { TermsPage, PrivacyPage } from '../pages/LegalPages';
 
@@ -22,7 +23,25 @@ const MainLayout = () => {
 
     // Restore session from JWT token on app load
     useEffect(() => {
-        dispatch(restoreSession());
+        const init = async () => {
+            const result = await dispatch(restoreSession());
+
+            // After restoring session, fetch fresh profiles via the /profiles endpoint.
+            // This triggers ProfileService.checkAndResetWater() on the backend,
+            // ensuring waterIntake is 0 if the date has changed since last login.
+            if (result.meta.requestStatus === 'fulfilled' && result.payload?.id) {
+                try {
+                    const freshProfiles = await profileApi.getProfiles(result.payload.id);
+                    if (freshProfiles?.length > 0) {
+                        dispatch(loadUserProfiles(freshProfiles));
+                    }
+                } catch (e) {
+                    // Non-critical — stale data still works, client-side date check will catch it
+                }
+            }
+        };
+
+        init();
 
         // Listen for auth:logout events (triggered on 401)
         const handleLogout = () => {
@@ -39,9 +58,15 @@ const MainLayout = () => {
     // Load data when active profile changes
     useEffect(() => {
         if (activeProfile) {
-            // Load profile-level data (goals, water) from the profile object
+            const today = new Date().toISOString().split('T')[0];
+
+            // Client-side safety: reset water if lastWaterDate is not today.
+            // This catches cases where the backend reset hasn't propagated yet.
+            const isStaleWater = activeProfile.lastWaterDate && activeProfile.lastWaterDate !== today;
+            const effectiveWater = isStaleWater ? 0 : (activeProfile.waterIntake || 0);
+
             dispatch(setGoals(activeProfile.goals || {}));
-            dispatch(setWaterIntake(activeProfile.waterIntake || 0));
+            dispatch(setWaterIntake(effectiveWater));
 
             // Fetch today's food and workout logs from API
             dispatch(fetchTodayData(activeProfile.id));
