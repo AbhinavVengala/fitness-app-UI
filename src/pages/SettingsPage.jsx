@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import Card from '../components/Card';
 import { Loader2, Save, User, Target, Trash2, AlertTriangle } from 'lucide-react';
 import { updateGoalsAsync } from '../store/slices/dataSlice';
-import { selectActiveProfile, selectUserId, updateProfileInStore } from '../store/slices/profileSlice';
+import { selectActiveProfile, selectUserId, updateProfileInStore, resetProfile } from '../store/slices/profileSlice';
+import { resetData } from '../store/slices/dataSlice';
+import { logout } from '../store/slices/authSlice';
 import { profileApi, apiFetch } from '../api';
-import { logout, resetProfile, resetData } from '../store/slices/authSlice';
-import { resetData as resetDataSlice } from '../store/slices/dataSlice';
 import toast from 'react-hot-toast';
+
 
 // Validation helpers
 const validateProfile = (profile) => {
@@ -111,7 +112,9 @@ const SettingsPage = () => {
             // Clear all state and redirect to landing
             dispatch(logout());
             dispatch(resetProfile());
-            dispatch(resetDataSlice());
+            dispatch(resetData());
+
+
         } catch (error) {
             toast.error(error.message || 'Failed to delete account. Please try again or contact support@paceplate.in');
         } finally {
