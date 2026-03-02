@@ -126,6 +126,8 @@ const ProfileCreationPage = () => {
                                         value={formData.age}
                                         onChange={e => updateField('age', e.target.value)}
                                         placeholder="25"
+                                        min="10"
+                                        max="100"
                                         className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
@@ -153,6 +155,8 @@ const ProfileCreationPage = () => {
                                         value={formData.weight}
                                         onChange={e => updateField('weight', e.target.value)}
                                         placeholder="70"
+                                        min="20"
+                                        max="300"
                                         className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
@@ -164,6 +168,8 @@ const ProfileCreationPage = () => {
                                         value={formData.height}
                                         onChange={e => updateField('height', e.target.value)}
                                         placeholder="170"
+                                        min="50"
+                                        max="250"
                                         className="input-modern bg-background"
                                         style={{ paddingLeft: '1rem' }}
                                     />
@@ -247,6 +253,8 @@ const ProfileCreationPage = () => {
                                     type="number"
                                     value={formData.goals.calories}
                                     onChange={e => updateGoal('calories', e.target.value)}
+                                    min="500"
+                                    max="10000"
                                     className="input-modern bg-background"
                                     style={{ paddingLeft: '1rem' }}
                                 />

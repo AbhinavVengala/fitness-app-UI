@@ -1,7 +1,8 @@
 /**
- * API Service Layer for Fitness Tracker
+ * API Service Layer for PacePlate
  * Connects frontend to Spring Boot backend
  */
+import toast from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -38,12 +39,19 @@ export async function apiFetch(endpoint, options = {}) {
     if (response.status === 401) {
         tokenManager.removeToken();
         window.dispatchEvent(new CustomEvent('auth:logout'));
+        toast.error('Session expired. Please sign in again.');
         throw new Error('Session expired. Please login again.');
     }
 
+    // Handle 429 Rate Limit
+    if (response.status === 429) {
+        toast.error('Too many requests. Please wait a moment.');
+        throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
     if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Network error' }));
-        throw new Error(error.error || `HTTP error! status: ${response.status}`);
+        const error = await response.json().catch(() => ({ error: 'Network error. Please check your connection.' }));
+        throw new Error(error.error || `Request failed (${response.status})`);
     }
 
     return response.json();

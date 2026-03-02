@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPage } from '../store/slices/profileSlice';
 import { apiFetch } from '../api';
 import { ArrowLeft, CreditCard, ShieldCheck } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const PaymentPage = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
@@ -34,7 +35,7 @@ const PaymentPage = () => {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: orderRes.totalAmount * 100,
                 currency: "INR",
-                name: "Fitness Tracker",
+                name: "PacePlate",
                 description: "Healthy Food Order",
                 order_id: orderRes.razorpayOrderId,
                 handler: async function (response) {
@@ -48,11 +49,11 @@ const PaymentPage = () => {
                             })
                         });
 
-                        alert("Order Placed Successfully!");
+                        toast.success('🎉 Order placed successfully!');
                         clearCart();
                         dispatch(setPage('dashboard'));
                     } catch (verifyError) {
-                        alert("Payment verification failed. Please contact support.");
+                        toast.error('Payment verification failed. Please contact support@paceplate.in');
                     }
                 },
                 prefill: {
@@ -70,13 +71,13 @@ const PaymentPage = () => {
 
             const rzp = new window.Razorpay(options);
             rzp.on('payment.failed', function (response) {
-                alert("Payment failed. Please try again.");
+                toast.error('Payment failed. Please try again or use a different payment method.');
                 setProcessing(false);
             });
             rzp.open();
 
         } catch (error) {
-            alert("Payment initialization failed. Please try again.");
+            toast.error(error.message || 'Payment initialization failed. Please try again.');
         } finally {
             setProcessing(false);
         }

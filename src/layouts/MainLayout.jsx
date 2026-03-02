@@ -53,12 +53,17 @@ const MainLayout = () => {
             <div className="flex flex-col items-center justify-center min-h-screen bg-background">
                 <div className="flex flex-col items-center gap-6 animate-in">
                     {/* Logo */}
-                    <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center shadow-xl shadow-primary/10">
-                        <Loader2 size={40} className="animate-spin text-primary" />
+                    <div className="relative w-20 h-20">
+                        <img src="/icon-512.png" alt="PacePlate" className="w-20 h-20 rounded-2xl object-cover shadow-xl shadow-primary/20" />
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <Loader2 size={14} className="animate-spin text-white" />
+                        </div>
                     </div>
                     {/* Brand text */}
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold text-foreground mb-2">Fitness Tracker</h1>
+                        <h1 className="text-2xl font-bold text-foreground mb-1">
+                            Pace<span className="text-primary">Plate</span>
+                        </h1>
                         <p className="text-muted-foreground text-sm">Loading your dashboard...</p>
                     </div>
                 </div>
