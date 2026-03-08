@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Card from '../components/Card';
-import { Home, Building, Trash2, Plus, Search, X, Flame, Timer, Hash, Loader2, Dumbbell } from 'lucide-react';
+import { Home, Building, Trash2, Plus, Search, X, Flame, Timer, Hash, Loader2, Dumbbell, Sparkles } from 'lucide-react';
 import { addWorkoutAsync, removeWorkoutAsync } from '../store/slices/dataSlice';
 import { selectActiveProfile, selectUserId } from '../store/slices/profileSlice';
 import { exercisesApi } from '../api';
+import WorkoutPlanGenerator from '../components/WorkoutPlanGenerator';
 
 const WorkoutTracker = () => {
     const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const WorkoutTracker = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showAiModal, setShowAiModal] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState(null);
     const [workoutForm, setWorkoutForm] = useState({
         reps: 10,
@@ -143,10 +145,18 @@ const WorkoutTracker = () => {
     return (
         <>
             <div className="space-y-6 pb-10 animate-in">
-                {/* Header */}
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold text-foreground">Workout Tracker</h1>
-                    <p className="text-muted-foreground mt-1">Select exercises and log your workouts</p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 text-center md:text-left">
+                    <div>
+                        <h1 className="text-3xl font-bold text-foreground">Workout Tracker</h1>
+                        <p className="text-muted-foreground mt-1">Select exercises and log your workouts</p>
+                    </div>
+                    <button
+                        onClick={() => setShowAiModal(true)}
+                        className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all w-full md:w-auto"
+                    >
+                        <Sparkles className="w-5 h-5" />
+                        AI Workout
+                    </button>
                 </div>
 
                 {/* Stats Card */}
@@ -408,6 +418,13 @@ const WorkoutTracker = () => {
                     </div>
                 </div>
             )}
+
+            {/* AI Workout Generator Modal */}
+            <WorkoutPlanGenerator
+                isOpen={showAiModal}
+                onClose={() => setShowAiModal(false)}
+                profileContext={activeProfile}
+            />
         </>
     );
 };

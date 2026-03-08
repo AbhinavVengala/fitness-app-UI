@@ -136,6 +136,13 @@ export const profileApi = {
             method: 'POST',
             body: JSON.stringify({ waterIntake }),
         }),
+
+    // Suggest daily goals based on profile data
+    suggestGoals: (profileData) =>
+        apiFetch(`/goals/suggest`, {
+            method: 'POST',
+            body: JSON.stringify(profileData)
+        }),
 };
 
 // Food Log API
@@ -230,6 +237,12 @@ export const foodsApi = {
 
     getByBarcode: (barcode) =>
         apiFetch(`/foods/barcode/${barcode}`),
+
+    aiSearch: (query) =>
+        apiFetch('/foods/ai-search', {
+            method: 'POST',
+            body: JSON.stringify({ query }),
+        }),
 
     getCategories: () =>
         apiFetch('/foods/categories'),
@@ -352,6 +365,39 @@ export const ordersApi = {
         }),
 };
 
+// Chat API (AI Chatbot)
+export const chatApi = {
+    send: (message, history, context) =>
+        apiFetch('/chat', {
+            method: 'POST',
+            body: JSON.stringify({ message, history, context }),
+        }),
+};
+
+// Insights API (Weekly AI Summaries)
+export const insightsApi = {
+    getWeekly: (profileId, start, end) =>
+        apiFetch(`/profiles/${profileId}/insights/weekly?start=${start}&end=${end}`),
+};
+
+// Meal Plan Generator API
+export const mealPlanApi = {
+    generate: (payload) =>
+        apiFetch(`/meal-plans/generate`, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        }),
+};
+
+// Workout Plan Generator API
+export const workoutPlanApi = {
+    generate: (payload) =>
+        apiFetch(`/workout-plans/generate`, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+        }),
+};
+
 export default {
     auth: authApi,
     profile: profileApi,
@@ -361,5 +407,9 @@ export default {
     exercises: exercisesApi,
     restaurants: restaurantsApi,
     orders: ordersApi,
+    chat: chatApi,
+    insights: insightsApi,
+    mealPlan: mealPlanApi,
+    workoutPlan: workoutPlanApi,
 };
 

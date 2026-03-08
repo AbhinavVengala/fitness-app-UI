@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Card from '../components/Card';
 import BarcodeScanner from '../components/BarcodeScanner';
-import { Search, Plus, Trash2, Loader2, X, Apple, Flame, Scale, ScanBarcode } from 'lucide-react';
+import { Search, Plus, Trash2, Loader2, X, Apple, Flame, Scale, ScanBarcode, Sparkles } from 'lucide-react';
 import { foodsApi } from '../api';
 import { addFoodAsync, removeFoodAsync } from '../store/slices/dataSlice';
 import { selectActiveProfile, selectUserId } from '../store/slices/profileSlice';
@@ -30,6 +30,11 @@ const MealLogger = () => {
 
     // Scanner state
     const [showScanner, setShowScanner] = useState(false);
+
+    // AI Search state
+    const [isAiMode, setIsAiMode] = useState(false);
+    const [isAiSearching, setIsAiSearching] = useState(false);
+    const [aiResults, setAiResults] = useState([]);
 
     useEffect(() => {
         loadFoods();
@@ -60,10 +65,12 @@ const MealLogger = () => {
         }
     };
 
-    // Debounced search
+    // Debounced search (only in normal mode)
     useEffect(() => {
+        if (isAiMode) return;
         if (!searchTerm.trim()) {
             loadFoods();
+            setAiResults([]);
             return;
         }
 
@@ -80,7 +87,29 @@ const MealLogger = () => {
         }, 300);
 
         return () => clearTimeout(timeoutId);
-    }, [searchTerm, userId]);
+    }, [searchTerm, userId, isAiMode]);
+
+    // AI Search handler
+    const handleAiSearch = async () => {
+        if (!searchTerm.trim()) return;
+        setIsAiSearching(true);
+        setAiResults([]);
+        try {
+            const results = await foodsApi.aiSearch(searchTerm.trim());
+            setAiResults(results);
+        } catch (error) {
+            console.error('AI search error:', error);
+            setAiResults([]);
+        } finally {
+            setIsAiSearching(false);
+        }
+    };
+
+    const toggleAiMode = () => {
+        setIsAiMode(prev => !prev);
+        setAiResults([]);
+        setSearchTerm('');
+    };
 
     // Helper functions for food categorization
     const isBreakfastItem = (food) => {
@@ -285,25 +314,57 @@ const MealLogger = () => {
                         {/* Search & Filters */}
                         {/* Search & Filters */}
                         <Card>
-                            <h2 className="text-xl font-bold text-foreground mb-4">Add Food</h2>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-xl font-bold text-foreground">Add Food</h2>
+                                {isAiMode && (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 text-xs font-semibold">
+                                        <Sparkles className="w-3 h-3" />
+                                        AI Mode
+                                    </span>
+                                )}
+                            </div>
 
                             <div className="space-y-4">
-                                {/* Search */}
                                 {/* Search & Scanner Row */}
                                 <div className="flex gap-3">
                                     <div className="relative flex-1">
                                         <input
                                             type="text"
-                                            placeholder="Search foods..."
+                                            placeholder={isAiMode ? 'Describe your meal... e.g. "2 rotis with dal and lassi"' : 'Search foods...'}
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
+                                            onKeyDown={(e) => { if (isAiMode && e.key === 'Enter') handleAiSearch(); }}
                                             className="input-modern bg-background !pl-14 w-full"
                                         />
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                                        {isSearching && (
+                                        {isAiMode ? (
+                                            <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                                        ) : (
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                        )}
+                                        {(isSearching || isAiSearching) && (
                                             <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-primary" />
                                         )}
                                     </div>
+                                    {isAiMode && (
+                                        <button
+                                            onClick={handleAiSearch}
+                                            disabled={isAiSearching || !searchTerm.trim()}
+                                            className="p-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl shadow-sm hover:from-violet-600 hover:to-purple-700 transition-all flex items-center justify-center min-w-[3rem] disabled:opacity-50"
+                                            title="Search with AI"
+                                        >
+                                            {isAiSearching ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={toggleAiMode}
+                                        className={`p-3 rounded-xl shadow-sm transition-all flex items-center justify-center min-w-[3rem] ${isAiMode
+                                                ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700'
+                                                : 'bg-card text-muted-foreground border border-border hover:border-violet-500/50 hover:text-violet-500'
+                                            }`}
+                                        title={isAiMode ? 'Switch to normal search' : 'AI-powered food search'}
+                                    >
+                                        <Sparkles className="w-5 h-5" />
+                                    </button>
                                     <button
                                         onClick={() => setShowScanner(true)}
                                         className="p-3 bg-primary text-primary-foreground rounded-xl shadow-sm hover:bg-primary/90 transition-all flex items-center justify-center min-w-[3rem]"
@@ -329,36 +390,82 @@ const MealLogger = () => {
                             </div>
                         </Card>
 
-                        {/* Food Grid */}
-                        <Card>
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-bold text-foreground">
-                                    Available Foods
-                                </h2>
-                                <span className="text-sm text-muted-foreground">{filteredFoods.length} items</span>
-                            </div>
+                        {/* AI Results */}
+                        {isAiMode && (
+                            <Card>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                                        <Sparkles className="w-5 h-5 text-violet-500" />
+                                        AI Results
+                                    </h2>
+                                    {aiResults.length > 0 && (
+                                        <span className="text-sm text-muted-foreground">{aiResults.length} items</span>
+                                    )}
+                                </div>
 
-                            {isLoadingFoods ? (
-                                <div className="flex justify-center py-8">
-                                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                {isAiSearching ? (
+                                    <div className="flex flex-col items-center justify-center py-12">
+                                        <div className="relative">
+                                            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-violet-500/20 to-purple-500/20 flex items-center justify-center animate-pulse">
+                                                <Sparkles className="w-8 h-8 text-violet-500" />
+                                            </div>
+                                        </div>
+                                        <p className="text-muted-foreground mt-4 font-medium">AI is analyzing your meal...</p>
+                                        <p className="text-sm text-muted-foreground/70 mt-1">Estimating nutritional values</p>
+                                    </div>
+                                ) : aiResults.length > 0 ? (
+                                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                        {aiResults.map(food => (
+                                            <MealCard
+                                                key={food.id}
+                                                food={food}
+                                                onAdd={() => openAddModal(food)}
+                                                isAiResult={true}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-12 bg-gradient-to-br from-violet-500/5 to-purple-500/5 rounded-xl border border-dashed border-violet-500/20">
+                                        <Sparkles className="w-10 h-10 mx-auto text-violet-400 mb-2" />
+                                        <p className="text-muted-foreground font-medium">Describe what you ate</p>
+                                        <p className="text-sm text-muted-foreground/70 mt-1">e.g. "a bowl of chicken biryani with raita"</p>
+                                    </div>
+                                )}
+                            </Card>
+                        )}
+
+                        {/* Food Grid (normal mode) */}
+                        {!isAiMode && (
+                            <Card>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-bold text-foreground">
+                                        Available Foods
+                                    </h2>
+                                    <span className="text-sm text-muted-foreground">{filteredFoods.length} items</span>
                                 </div>
-                            ) : filteredFoods.length === 0 ? (
-                                <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed border-border">
-                                    <Search className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
-                                    <p className="text-muted-foreground">No foods found matching your criteria</p>
-                                </div>
-                            ) : (
-                                <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                                    {filteredFoods.map(food => (
-                                        <MealCard
-                                            key={food.id}
-                                            food={food}
-                                            onAdd={() => openAddModal(food)}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </Card>
+
+                                {isLoadingFoods ? (
+                                    <div className="flex justify-center py-8">
+                                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                    </div>
+                                ) : filteredFoods.length === 0 ? (
+                                    <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed border-border">
+                                        <Search className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
+                                        <p className="text-muted-foreground">No foods found matching your criteria</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                        {filteredFoods.map(food => (
+                                            <MealCard
+                                                key={food.id}
+                                                food={food}
+                                                onAdd={() => openAddModal(food)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </Card>
+                        )}
                     </div>
 
 
@@ -612,13 +719,19 @@ const MealLogger = () => {
     );
 };
 
-const MealCard = ({ food, onAdd }) => {
+const MealCard = ({ food, onAdd, isAiResult = false }) => {
     const [imageError, setImageError] = useState(false);
 
     return (
-        <div className="rounded-xl bg-card border border-border hover:border-primary/50 transition-all group shadow-sm hover:shadow-md overflow-hidden flex flex-col h-full">
+        <div className={`rounded-xl bg-card border transition-all group shadow-sm hover:shadow-md overflow-hidden flex flex-col h-full ${isAiResult ? 'border-violet-500/30 hover:border-violet-500/60' : 'border-border hover:border-primary/50'
+            }`}>
             <div className="relative h-40 w-full bg-muted">
-                {!imageError ? (
+                {isAiResult ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-violet-500/10 to-purple-500/10 text-violet-400">
+                        <Sparkles className="w-12 h-12 mb-2 opacity-60" />
+                        <span className="text-xs font-medium text-muted-foreground">AI Estimated</span>
+                    </div>
+                ) : !imageError ? (
                     <img
                         src={food.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80'}
                         onError={() => setImageError(true)}
@@ -633,14 +746,22 @@ const MealCard = ({ food, onAdd }) => {
                     </div>
                 )}
 
-                <div className="absolute top-2 left-2">
+                <div className="absolute top-2 left-2 flex gap-1.5">
                     <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10">
                         {food.category}
                     </span>
+                    {isAiResult && (
+                        <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full bg-violet-500/80 text-white backdrop-blur-sm border border-violet-400/30 flex items-center gap-1">
+                            <Sparkles className="w-2.5 h-2.5" /> AI
+                        </span>
+                    )}
                 </div>
                 <button
                     onClick={onAdd}
-                    className="absolute bottom-2 right-2 p-2 rounded-lg bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 transition-all"
+                    className={`absolute bottom-2 right-2 p-2 rounded-lg shadow-lg hover:scale-105 transition-all ${isAiResult
+                            ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700'
+                            : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        }`}
                 >
                     <Plus size={20} />
                 </button>

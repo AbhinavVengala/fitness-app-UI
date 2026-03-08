@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Card from '../components/Card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { Apple, Dumbbell, Flame, Utensils, Target, ArrowRight, Droplets, X, Plus } from 'lucide-react';
+import { Apple, Dumbbell, Flame, Utensils, Target, ArrowRight, Droplets, X, Plus, Sparkles } from 'lucide-react';
 import { setPage, selectActiveProfile, selectUserId } from '../store/slices/profileSlice';
 import { selectDailyTotals, updateWaterAsync } from '../store/slices/dataSlice';
+import MealPlanGenerator from '../components/MealPlanGenerator';
 
 const Dashboard = () => {
     const dispatch = useDispatch();
@@ -19,10 +20,22 @@ const Dashboard = () => {
 
     // Prepare Chart Data
     const [showWaterModal, setShowWaterModal] = useState(false);
+    const [showMealPlanModal, setShowMealPlanModal] = useState(false);
     const pieData = [
         { name: 'Net Calories', value: netCalories > 0 ? netCalories : 0 },
         { name: 'Remaining', value: remainingCalories > 0 ? remainingCalories : 0 }
     ];
+
+    const currentLogContext = {
+        consumedCalories: dailyTotals.calories.toFixed(0),
+        consumedProtein: dailyTotals.protein.toFixed(0),
+        consumedCarbs: dailyTotals.carbs.toFixed(0),
+        consumedFats: dailyTotals.fats.toFixed(0),
+        remainingCalories: remainingCalories > 0 ? remainingCalories.toFixed(0) : 0,
+        remainingProtein: goals.protein ? Math.max(0, goals.protein - dailyTotals.protein).toFixed(0) : 0,
+        remainingCarbs: goals.carbs ? Math.max(0, goals.carbs - dailyTotals.carbs).toFixed(0) : 0,
+        remainingFats: goals.fats ? Math.max(0, goals.fats - dailyTotals.fats).toFixed(0) : 0,
+    };
 
     // Tailwind Primary (Indigo) and Muted/Border for remaining
     const COLORS = ['#6366f1', '#e2e8f0'];
@@ -217,6 +230,22 @@ const Dashboard = () => {
                         </div>
                         <ArrowRight size={18} className="text-muted-foreground group-hover:text-orange-500 transition-colors" />
                     </button>
+
+                    <button
+                        onClick={() => setShowMealPlanModal(true)}
+                        className="group flex items-center justify-between p-4 rounded-xl border border-amber-500/30 bg-gradient-to-r from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 transition-all text-left"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-br from-orange-400 to-amber-500 text-white rounded-lg shadow-md shadow-orange-500/20">
+                                <Sparkles size={20} />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-foreground">AI Meal Plan</h4>
+                                <p className="text-xs text-muted-foreground">Get recipes for your remaining macros</p>
+                            </div>
+                        </div>
+                        <ArrowRight size={18} className="text-amber-500 transition-colors" />
+                    </button>
                 </Card>
             </div>
 
@@ -306,6 +335,14 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
+
+            {/* AI Meal Plan Generator Modal */}
+            <MealPlanGenerator
+                isOpen={showMealPlanModal}
+                onClose={() => setShowMealPlanModal(false)}
+                profileContext={activeProfile}
+                currentLogContext={currentLogContext}
+            />
         </div>
     );
 };

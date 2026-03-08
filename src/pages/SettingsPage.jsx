@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Card from '../components/Card';
-import { Loader2, Save, User, Target, Trash2, AlertTriangle } from 'lucide-react';
+import { Loader2, Save, User, Target, Trash2, AlertTriangle, Sparkles } from 'lucide-react';
 import { updateGoalsAsync } from '../store/slices/dataSlice';
 import { selectActiveProfile, selectUserId, updateProfileInStore, resetProfile } from '../store/slices/profileSlice';
 import { resetData } from '../store/slices/dataSlice';
@@ -46,6 +46,9 @@ const SettingsPage = () => {
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // AI Suggestions state
+    const [isSuggesting, setIsSuggesting] = useState(false);
+
     useEffect(() => {
         setLocalProfile(activeProfile);
         setLocalGoals(goals);
@@ -65,6 +68,28 @@ const SettingsPage = () => {
         setLocalGoals(g => ({ ...g, [e.target.name]: parseInt(e.target.value) || 0 }));
         if (validationErrors[e.target.name]) {
             setValidationErrors(v => ({ ...v, [e.target.name]: null }));
+        }
+    };
+
+    const handleSuggestGoals = async () => {
+        setIsSuggesting(true);
+        try {
+            // Include both to ensure full context for Gemini
+            const contextData = { ...localProfile, goals: localGoals };
+            const suggested = await profileApi.suggestGoals(contextData);
+            setLocalGoals(suggested);
+
+            // clear goal validation errors if any
+            const newValidationErrors = { ...validationErrors };
+            delete newValidationErrors.calories;
+            delete newValidationErrors.protein;
+            setValidationErrors(newValidationErrors);
+
+            toast.success("Goals auto-suggested by AI!");
+        } catch (err) {
+            toast.error(err.message || 'Failed to get AI suggestions');
+        } finally {
+            setIsSuggesting(false);
         }
     };
 
@@ -206,11 +231,21 @@ const SettingsPage = () => {
 
                 {/* Goals Section */}
                 <Card>
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                            <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <div className="flex items-center justify-between gap-3 mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                                <Target className="w-5 h-5 text-green-600 dark:text-green-400" />
+                            </div>
+                            <h2 className="text-xl font-bold text-foreground">Daily Goals</h2>
                         </div>
-                        <h2 className="text-xl font-bold text-foreground">Daily Goals</h2>
+                        <button
+                            onClick={handleSuggestGoals}
+                            disabled={isSuggesting}
+                            className="flex auto items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/30 text-violet-600 dark:text-violet-400 font-semibold hover:bg-violet-500/20 transition-all text-xs disabled:opacity-50"
+                        >
+                            {isSuggesting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                            Auto-suggest
+                        </button>
                     </div>
 
                     <div className="space-y-4">

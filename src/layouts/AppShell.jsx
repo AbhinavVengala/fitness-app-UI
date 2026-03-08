@@ -19,6 +19,7 @@ import Navbar from '../components/Navbar';
 import MobileNavbar from '../components/MobileNavbar';
 import ThemeToggle from '../components/ThemeToggle';
 import FeedbackModal from '../components/FeedbackModal';
+import AiChatWidget from '../components/AiChatWidget';
 import { MessageSquare, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -184,6 +185,7 @@ const AppShell = ({ page }) => {
             </main>
 
             <MobileNavbar />
+            <AiChatWidget />
             <FeedbackModal isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
         </div>
     );

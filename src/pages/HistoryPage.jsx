@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Card from '../components/Card';
-import { Calendar, ChevronLeft, ChevronRight, Apple, Flame, Loader2, TrendingUp, Droplets } from 'lucide-react';
-import { foodLogApi, workoutLogApi, profileApi } from '../api';
+import { Calendar, ChevronLeft, ChevronRight, Apple, Flame, Loader2, TrendingUp, Droplets, Sparkles } from 'lucide-react';
+import { foodLogApi, workoutLogApi, profileApi, insightsApi } from '../api';
 import { selectActiveProfile } from '../store/slices/profileSlice';
 
 // ─────────────────────────────────────────────
@@ -34,6 +34,10 @@ const HistoryPage = () => {
     const [viewMode, setViewMode] = useState('day');
     const [weekLogs, setWeekLogs] = useState({ food: [], workout: [] });
     const [weekWaterMap, setWeekWaterMap] = useState({}); // dateStr -> waterIntake
+
+    // AI Insights State
+    const [weeklyInsight, setWeeklyInsight] = useState(null);
+    const [isInsightLoading, setIsInsightLoading] = useState(false);
 
     // Load logs when date or view changes
     useEffect(() => {
@@ -98,6 +102,18 @@ const HistoryPage = () => {
             }
             setWeekWaterMap(waterMap);
 
+            // Fetch AI Insight
+            setIsInsightLoading(true);
+            try {
+                const insightResponse = await insightsApi.getWeekly(activeProfile.id, startStr, endStr);
+                setWeeklyInsight(insightResponse.insight);
+            } catch (err) {
+                console.error("Failed to load AI insight:", err);
+                setWeeklyInsight(null);
+            } finally {
+                setIsInsightLoading(false);
+            }
+
         } catch (error) {
             console.error('Failed to load week logs:', error);
             setWeekLogs({ food: [], workout: [] });
@@ -152,6 +168,29 @@ const HistoryPage = () => {
 
     const today = new Date().toISOString().split('T')[0];
     const isFuture = selectedDate > today;
+
+    // Helper to render markdown-ish text for the insight
+    const renderMarkdown = (text) => {
+        if (!text) return null;
+        return text.split('\n').map((line, i) => {
+            let formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            if (formatted.startsWith('- ') || formatted.startsWith('• ')) {
+                formatted = formatted.replace(/^[-•]\s/, '');
+                return (
+                    <div key={i} className="flex gap-2 ml-1 mt-1">
+                        <span className="text-violet-500 mt-0.5 shrink-0">•</span>
+                        <span dangerouslySetInnerHTML={{ __html: formatted }} />
+                    </div>
+                );
+            }
+            return (
+                <p key={i} className={`${line === '' ? 'h-2' : 'mb-1'} text-sm leading-relaxed`}
+                    dangerouslySetInnerHTML={{ __html: formatted }} />
+            );
+        });
+    };
 
     return (
         <div className="space-y-6 pb-10 animate-in">
@@ -340,6 +379,35 @@ const HistoryPage = () => {
                 </>
             ) : (
                 <>
+                    {/* Weekly AI Insight Card */}
+                    <Card className="bg-gradient-to-br from-violet-500/10 to-purple-500/10 border-violet-500/20 relative overflow-hidden">
+                        {/* Decorative background element */}
+                        <div className="absolute top-0 right-0 p-8 opacity-5">
+                            <Sparkles className="w-32 h-32 text-violet-500" />
+                        </div>
+
+                        <div className="flex items-center gap-3 mb-3 relative z-10">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 flex items-center justify-center shrink-0 shadow-md">
+                                <Sparkles className="w-4 h-4 text-white" />
+                            </div>
+                            <h2 className="text-lg font-bold text-foreground bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-purple-600 dark:from-violet-400 dark:to-purple-400">Weekly AI Insight</h2>
+                        </div>
+
+                        <div className="relative z-10 text-muted-foreground">
+                            {isInsightLoading ? (
+                                <div className="space-y-3 py-2 animate-pulse">
+                                    <div className="h-4 bg-muted rounded-md w-3/4"></div>
+                                    <div className="h-4 bg-muted rounded-md w-full"></div>
+                                    <div className="h-4 bg-muted rounded-md w-5/6"></div>
+                                </div>
+                            ) : weeklyInsight ? (
+                                <div>{renderMarkdown(weeklyInsight)}</div>
+                            ) : (
+                                <p className="text-sm">Not enough data to generate an insight for this week.</p>
+                            )}
+                        </div>
+                    </Card>
+
                     {/* Week Summary Cards */}
                     <div className="grid grid-cols-2 gap-4">
                         <SummaryCard

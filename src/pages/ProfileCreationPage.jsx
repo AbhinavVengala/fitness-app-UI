@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { User, Target, Scale, Ruler, Calendar, Dumbbell, ArrowRight, Loader2 } from 'lucide-react';
+import { User, Target, Scale, Ruler, Calendar, Dumbbell, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { profileApi } from '../api';
+import toast from 'react-hot-toast';
 import { loadUserProfiles, setActiveProfileId, selectUserId } from '../store/slices/profileSlice';
 
 const ProfileCreationPage = () => {
@@ -10,6 +11,7 @@ const ProfileCreationPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [step, setStep] = useState(1);
+    const [isSuggesting, setIsSuggesting] = useState(false);
 
     // Form data
     const [formData, setFormData] = useState({
@@ -38,6 +40,22 @@ const ProfileCreationPage = () => {
             ...prev,
             goals: { ...prev.goals, [field]: parseInt(value) || 0 }
         }));
+    };
+
+    const handleSuggestGoals = async () => {
+        setIsSuggesting(true);
+        try {
+            const suggested = await profileApi.suggestGoals(formData);
+            setFormData(prev => ({
+                ...prev,
+                goals: suggested
+            }));
+            toast.success("Goals auto-suggested by AI!");
+        } catch (err) {
+            toast.error(err.message || 'Failed to get AI suggestions');
+        } finally {
+            setIsSuggesting(false);
+        }
     };
 
     const handleSubmit = async () => {
@@ -244,6 +262,17 @@ const ProfileCreationPage = () => {
                             </div>
                             <h2 className="text-2xl font-bold text-foreground">Set your daily targets</h2>
                             <p className="text-muted-foreground mt-2">You can adjust these anytime</p>
+                        </div>
+
+                        <div className="flex justify-center mb-6">
+                            <button
+                                onClick={handleSuggestGoals}
+                                disabled={isSuggesting}
+                                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/30 text-violet-600 dark:text-violet-400 font-semibold hover:bg-violet-500/20 transition-all font-medium text-sm disabled:opacity-50"
+                            >
+                                {isSuggesting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                Auto-Suggest with AI
+                            </button>
                         </div>
 
                         <div className="space-y-4">
